@@ -1,3 +1,5 @@
+> **[FOR HUMANS ONLY]** This file is not part of the project context. Claude Code does not need to read README.md.
+
 # Harness Engineering — Claude Code 开发模板
 
 **这是一个给 Claude Code 用的项目脚手架。**

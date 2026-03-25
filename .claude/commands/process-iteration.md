@@ -1,74 +1,74 @@
-# 技能: process-iteration — 迭代需求处理
+# Skill: process-iteration — Iteration Change Processing
 
-处理对已有功能的变更请求（迭代需求），区别于首次需求解析（`/process-requirements`）。
+Handle change requests for existing features (iteration changes), as distinct from first-time requirements parsing (`/process-requirements`).
 
-**触发方式：** `/process-iteration [文件路径可选]`
+**Trigger:** `/process-iteration [optional file path]`
 
-**适用场景：**
-- 修改已实现的功能
-- 为现有功能增加新的子功能
-- 需求调整（用户反馈后的更改）
-- 产品迭代（v1 → v2）
-
----
-
-## 步骤 1：读取变更内容
-
-检查以下来源：
-1. `docs/prd/` 中的新文件（以 `change-`、`iteration-`、`v2-` 等命名的文件）
-2. 用户在对话中直接描述的变更
-
-如果用户在对话中描述，先保存到 `docs/prd/iteration-<日期>.md`。
+**Applicable Scenarios:**
+- Modifying an already-implemented feature
+- Adding new sub-features to an existing feature
+- Requirements adjustments (changes following user feedback)
+- Product iteration (v1 → v2)
 
 ---
 
-## 步骤 2：解析变更类型
+## Step 1: Read the Change Content
 
-对每条变更需求，判断类型：
+Check the following sources:
+1. New files in `docs/prd/` (files named with `change-`, `iteration-`, `v2-`, etc.)
+2. Changes described directly by the user in the conversation
 
-| 变更类型 | 说明 | 处理方式 |
-|----------|------|----------|
-| `extend` | 在现有功能基础上新增能力 | 创建子功能 FEAT-XXX-EXT |
-| `modify` | 修改现有功能的行为/样式 | 创建 CHANGE-XXX 关联原功能 |
-| `replace` | 完全替换某个功能 | 将原功能标记 deprecated，创建新功能 |
-| `new` | 全新功能（未在原 features 中） | 正常创建新 FEAT-XXX |
-| `remove` | 删除某个功能 | 将原功能标记 removed，清理相关代码 |
+If the user describes changes in the conversation, save them to `docs/prd/iteration-<date>.md` first.
 
 ---
 
-## 步骤 3：影响分析
+## Step 2: Parse Change Types
 
-对每条变更，分析：
+For each change request, determine its type:
+
+| Change Type | Description | Handling |
+|-------------|-------------|----------|
+| `extend` | Add new capability on top of an existing feature | Create sub-feature FEAT-XXX-EXT |
+| `modify` | Change the behavior/style of an existing feature | Create CHANGE-XXX linked to the original feature |
+| `replace` | Completely replace a feature | Mark original feature as deprecated, create new feature |
+| `new` | Brand new feature (not in original features) | Create new FEAT-XXX normally |
+| `remove` | Delete a feature | Mark original feature as removed, clean up related code |
+
+---
+
+## Step 3: Impact Analysis
+
+For each change, analyze:
 
 ```
-变更: <描述>
-影响的功能: <FEAT-XXX>
-影响的文件: <可能需要修改的代码文件>
-影响的功能（依赖链）: <其他依赖此功能的 FEAT-YYY>
-设计变更: 是否需要更新 design-spec.md
-向后兼容: 此变更是否破坏性变更（影响 API 接口/数据结构）
+Change: <description>
+Affected feature: <FEAT-XXX>
+Affected files: <code files that may need modification>
+Affected features (dependency chain): <other FEAT-YYY that depend on this feature>
+Design change: whether design-spec.md needs to be updated
+Backward compatible: whether this change is a breaking change (affects API interfaces/data structures)
 ```
 
 ---
 
-## 步骤 4：更新 features.json
+## Step 4: Update features.json
 
-### 新增变更记录
+### Add Change Records
 
-在 `features.json` 中添加 `change_requests` 数组（如不存在则创建）：
+Add a `change_requests` array to `features.json` (create it if it does not exist):
 
 ```json
 {
   "change_requests": [
     {
       "id": "CHANGE-001",
-      "title": "<变更标题>",
+      "title": "<change title>",
       "type": "extend | modify | replace | new | remove",
       "target_feature": "FEAT-XXX",
-      "description": "<变更详细描述>",
-      "reason": "<变更原因>",
-      "acceptance_criteria": ["<标准1>", "<标准2>"],
-      "affected_files": ["<文件路径>"],
+      "description": "<detailed change description>",
+      "reason": "<reason for the change>",
+      "acceptance_criteria": ["<criteria 1>", "<criteria 2>"],
+      "affected_files": ["<file path>"],
       "breaking_change": false,
       "priority": 1,
       "status": "pending",
@@ -80,99 +80,99 @@
 }
 ```
 
-### 标记原功能版本
+### Mark Original Feature Version
 
-对于 `modify` 类型，在原功能的 `notes` 中追加：
+For `modify` type, append to the original feature's `notes`:
 ```
-变更历史:
-  - CHANGE-001 (2026-03-25): <变更摘要>
+Change history:
+  - CHANGE-001 (2026-03-25): <change summary>
 ```
 
-对于 `replace` 类型，更新原功能 `status` 为 `deprecated`。
+For `replace` type, update the original feature's `status` to `deprecated`.
 
 ---
 
-## 步骤 5：输出变更解析报告
+## Step 5: Output Change Parsing Report
 
 ```
-=== 迭代需求解析完成 ===
+=== Iteration Change Parsing Complete ===
 
-【变更清单】（共 N 条）
+[Change List] (N changes total)
 
-🔧 CHANGE-001 [modify] FEAT-002 用户登录
-   变更: 增加微信/Google 第三方登录
-   影响文件: frontend/web/src/pages/login.tsx, services/auth/src/routes/oauth.ts
-   破坏性: 否（新增接口，不修改原有接口）
+🔧 CHANGE-001 [modify] FEAT-002 User Login
+   Change: Add WeChat/Google third-party login
+   Affected files: frontend/web/src/pages/login.tsx, services/auth/src/routes/oauth.ts
+   Breaking change: No (adds new interface, does not modify existing)
 
-➕ CHANGE-002 [extend] FEAT-005 商品列表
-   变更: 支持多维度筛选（价格区间、分类、评分）
-   影响文件: services/api/src/routes/products.ts, apps/web/src/components/FilterPanel.tsx
-   破坏性: 否
+➕ CHANGE-002 [extend] FEAT-005 Product List
+   Change: Support multi-dimensional filtering (price range, category, rating)
+   Affected files: services/api/src/routes/products.ts, apps/web/src/components/FilterPanel.tsx
+   Breaking change: No
 
-🔄 CHANGE-003 [replace] FEAT-008 支付模块
-   变更: 从模拟支付替换为真实支付宝集成
-   影响文件: services/payment/（整个目录重写）
-   破坏性: 是（API 参数结构变化）
-   ⚠️ 原功能 FEAT-008 将被标记为 deprecated
+🔄 CHANGE-003 [replace] FEAT-008 Payment Module
+   Change: Replace mock payment with real Alipay integration
+   Affected files: services/payment/ (entire directory rewrite)
+   Breaking change: Yes (API parameter structure changes)
+   ⚠️ Original feature FEAT-008 will be marked as deprecated
 
-【影响评估】
-- 总共影响 <N> 个已有文件
-- <N> 个功能受依赖链影响（可能需要联动修改）
-- 破坏性变更: <N> 个（需要特别关注）
+[Impact Assessment]
+- <N> existing files affected in total
+- <N> features affected via dependency chain (may require coordinated changes)
+- Breaking changes: <N> (require special attention)
 
-【建议实现顺序】
-1. CHANGE-001（无依赖）
-2. CHANGE-003（需先备份 FEAT-008 逻辑）
-3. CHANGE-002（依赖 CHANGE-001 完成）
+[Suggested Implementation Order]
+1. CHANGE-001 (no dependencies)
+2. CHANGE-003 (back up FEAT-008 logic first)
+3. CHANGE-002 (depends on CHANGE-001 being complete)
 
-请确认后运行 /implement-feature CHANGE-001 开始实现。
+Please confirm and then run /implement-feature CHANGE-001 to start implementation.
 ====================
 ```
 
 ---
 
-## 实现变更的注意事项
+## Notes for Implementing Changes
 
-### modify 类型
+### modify type
 
-在修改现有代码时：
-1. 在文件头部注释中追加变更记录：
+When modifying existing code:
+1. Append a change record to the file header comment:
    ```
-   // CHANGE-001 (2026-03-25): <变更摘要>
+   // CHANGE-001 (2026-03-25): <change summary>
    ```
-2. 保留原有逻辑（注释标注），除非完全替换
-3. 优先新增，而非修改（开闭原则）
+2. Preserve original logic (annotated), unless it is a complete replacement
+3. Prefer adding over modifying (open/closed principle)
 
-### replace 类型
+### replace type
 
-1. 先读取原功能代码，理解现有逻辑
-2. 创建新实现（可以是新文件）
-3. 切换引用
-4. 确认新实现工作后，删除旧代码
+1. Read the original feature code first to understand existing logic
+2. Create new implementation (can be a new file)
+3. Switch references
+4. Once new implementation is confirmed working, delete old code
 
-### breaking_change = true 时
+### When breaking_change = true
 
-必须：
-1. 在 `claude-progress.txt` 中明确标注 `[BREAKING CHANGE]`
-2. 列出所有受影响的调用方
-3. 提供迁移说明（修改了什么、调用方需要做什么）
+Must:
+1. Clearly mark `[BREAKING CHANGE]` in `claude-progress.txt`
+2. List all affected callers
+3. Provide migration notes (what changed, what callers need to do)
 
 ---
 
-## 迭代版本管理
+## Iteration Version Management
 
-当一个功能经历多次迭代时，在 `features.json` 的该功能中维护版本历史：
+When a feature goes through multiple iterations, maintain version history in that feature entry in `features.json`:
 
 ```json
 {
   "id": "FEAT-003",
-  "title": "商品详情页",
+  "title": "Product Detail Page",
   "status": "done",
   "version": "v3",
   "version_history": [
-    { "version": "v1", "change": "初始实现", "date": "2026-03-01" },
-    { "version": "v2", "change": "CHANGE-002: 增加图片轮播", "date": "2026-03-10" },
-    { "version": "v3", "change": "CHANGE-007: 增加视频播放", "date": "2026-03-20" }
+    { "version": "v1", "change": "Initial implementation", "date": "2026-03-01" },
+    { "version": "v2", "change": "CHANGE-002: Add image carousel", "date": "2026-03-10" },
+    { "version": "v3", "change": "CHANGE-007: Add video playback", "date": "2026-03-20" }
   ]
 }
 ```

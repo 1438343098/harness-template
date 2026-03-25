@@ -1,27 +1,27 @@
-# 产品需求文档模板
+# Product Requirements Document Template
 
-> **使用说明：** 以下为推荐格式，不强制。随意填写即可，Claude Code 会自动整理。
-
----
-
-## 项目基本信息
-
-**项目名称：**（你的项目叫什么名字？）
-
-**一句话描述：**（用一句话描述这个应用做什么）
-
-**目标用户：**（谁会用这个产品？）
-
-**技术偏好：**（想用什么技术栈？不知道可以不填）
-- 前端：React / Vue / Next.js / 其他 / 不知道
-- 后端：Node.js / Python / Java / 其他 / 不知道
-- 数据库：MySQL / PostgreSQL / MongoDB / 其他 / 不知道
+> **Usage note:** The format below is recommended but not required. Fill it in however you like — Claude Code will organize it automatically.
 
 ---
 
-## 核心功能需求
+## Project Overview
 
-> 按重要性排列。每条功能 1-2 句话描述。不需要技术细节。
+**Project name:** (What is your project called?)
+
+**One-line description:** (Describe in one sentence what this application does)
+
+**Target users:** (Who will use this product?)
+
+**Technology preferences:** (What tech stack do you want to use? Leave blank if unsure)
+- Frontend: React / Vue / Next.js / Other / Not sure
+- Backend: Node.js / Python / Java / Other / Not sure
+- Database: MySQL / PostgreSQL / MongoDB / Other / Not sure
+
+---
+
+## Core Feature Requirements
+
+> Listed by importance. 1-2 sentences per feature. No technical details needed.
 
 1.
 
@@ -29,24 +29,24 @@
 
 3.
 
-（继续添加...）
+(Continue adding...)
 
 ---
 
-## 用户主要流程
+## Main User Flow
 
-> 描述用户如何使用这个产品的主要步骤。
+> Describe the main steps of how a user will use this product.
 
-1. 用户打开应用
+1. User opens the app
 2.
 3.
-4. 最终达成...
+4. Ultimately achieves...
 
 ---
 
-## 界面/页面需求
+## UI / Page Requirements
 
-> 需要哪些页面？简单描述即可。
+> What pages are needed? A simple description is fine.
 
 -
 -
@@ -54,36 +54,36 @@
 
 ---
 
-## 特殊需求
+## Special Requirements
 
-> 有什么特别重要的要求？（性能、安全、第三方集成等）
-
--
-
----
-
-## 不需要的功能
-
-> 明确不需要什么，避免过度实现。
+> Any particularly important requirements? (performance, security, third-party integrations, etc.)
 
 -
 
 ---
 
-## 参考产品
+## Out of Scope
 
-> 有没有类似的产品可以参考？（可以不填）
+> What is explicitly not needed, to avoid over-building.
 
-- 像 xxx 的 xxx 功能
-
----
-
-## 补充说明
-
-> 任何其他想说的，随便写。
-
-
+-
 
 ---
 
-*提交后运行：`/process-requirements` 开始解析*
+## Reference Products
+
+> Are there any similar products to reference? (optional)
+
+- Like the xxx feature of xxx
+
+---
+
+## Additional Notes
+
+> Anything else you want to say — write freely.
+
+
+
+---
+
+*After submitting, run: `/process-requirements` to begin parsing*

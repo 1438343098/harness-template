@@ -1,70 +1,70 @@
-# 技能: session-start — 会话初始化
+# Skill: session-start — Session Initialization
 
-执行以下步骤，向用户汇报项目状态并制定本次会话计划。
+Execute the following steps to report project status to the user and formulate a plan for the current session.
 
-## 步骤 0：读取用户偏好
+## Step 0: Read User Preferences
 
 ```bash
 cat user-preferences.json
 ```
 
-提取所有 `confirmed: true` 的偏好，本次会话中所有相关决策直接使用这些默认值，不再询问。
+Extract all preferences with `confirmed: true`. For all relevant decisions in this session, use these as defaults directly without asking again.
 
 ---
 
-## 步骤 1：读取进度日志
+## Step 1: Read Progress Log
 
 ```bash
 tail -80 claude-progress.txt
 ```
 
-如果文件不存在或没有 SESSION END 记录，说明这是第一次会话。
+If the file does not exist or has no SESSION END record, this is the first session.
 
-## 步骤 2：读取功能状态
+## Step 2: Read Feature Status
 
 ```bash
 cat features.json
 ```
 
-解析并分类：
-- `in_progress` 功能列表（遗留任务，优先处理）
-- `pending` 功能列表（按 priority 排序）
-- `done` 功能数量
+Parse and categorize:
+- `in_progress` feature list (leftover tasks, handle first)
+- `pending` feature list (sorted by priority)
+- `done` feature count
 
-## 步骤 2.5：检查并行任务遗留状态
+## Step 2.5: Check Leftover State from Parallel Tasks
 
 ```bash
 cat agents.json
 ```
 
-检查 `agents` 数组中是否有 `status: running` 的条目：
+Check whether there are entries with `status: running` in the `agents` array:
 
-**如果有 running 条目：**
+**If there are running entries:**
 
-说明上次会话在并行执行中途中断。对每个 running 条目：
+This means the previous session was interrupted mid-parallel execution. For each running entry:
 
 ```
-检查 features.json 中对应功能的状态：
+Check the status of the corresponding feature in features.json:
 
-情况A: features.json 中该功能是 done
-→ 子 Agent 完成了但 Orchestrator 没来得及清理 agents.json
-→ 直接将 agents.json 中该条目 status 改为 done
-→ 无需重新实现
+Case A: The feature in features.json is done
+→ The sub-Agent finished but the Orchestrator did not get to clean up agents.json
+→ Directly change the status of that entry in agents.json to done
+→ No need to re-implement
 
-情况B: features.json 中该功能是 in_progress
-→ 状态不一致，子 Agent 中途中断
-→ 将 features.json 中该功能重置为 pending，清空 started_at
-→ 将 agents.json 中该条目 status 改为 failed，error 写"会话中断"
-→ 在会话简报中展示警告
+Case B: The feature in features.json is in_progress
+→ Inconsistent state, the sub-Agent was interrupted mid-way
+→ Reset that feature in features.json to pending, clear started_at
+→ Change the entry status in agents.json to failed, set error to "session interrupted"
+→ Show a warning in the session brief
 
-情况C: features.json 中该功能是 pending
-→ agents.json 未及时注册就中断了
-→ 直接将 agents.json 中该条目 status 改为 failed
+Case C: The feature in features.json is pending
+→ agents.json was not registered in time before the interruption
+→ Directly change the entry status in agents.json to failed
 ```
 
-**如果没有 running 条目：** 继续下一步，无需处理。
+**If there are no running entries:** Continue to the next step, no action needed.
 
-## 步骤 3：检查文档准备情况
+## Step 3: Check Document Readiness
 
 ```bash
 ls docs/prd/
@@ -72,67 +72,67 @@ ls docs/design/assets/
 ls docs/design/extracted/
 ```
 
-识别：
-- `docs/prd/` 是否有用户需求文档且尚未解析（features.json 为空）
-- `docs/design/assets/` 是否有设计图片且 `extracted/` 下没有 design-spec.md
+Identify:
+- Whether `docs/prd/` has user requirements documents that have not been parsed (features.json is empty)
+- Whether `docs/design/assets/` has design images and `extracted/` does not have design-spec.md
 
-## 步骤 3.5：读取项目注册表
+## Step 3.5: Read Project Registry
 
 ```bash
 cat features.json
 ```
 
-提取 `projects.apps` 和 `projects.services`，了解当前有哪些子项目。
+Extract `projects.apps` and `projects.services` to understand what sub-projects currently exist.
 
-## 步骤 4：输出会话简报
+## Step 4: Output Session Brief
 
-按以下格式输出：
+Output in the following format:
 
 ```
-=== 会话简报 ===
-日期: <今天日期>
+=== Session Brief ===
+Date: <today's date>
 
-【用户偏好（已学习的默认值）】
-<列出所有 confirmed 偏好，如无则写"暂无，将在本次会话中学习">
+[User Preferences (learned defaults)]
+<List all confirmed preferences, or write "None yet, will be learned this session" if empty>
 
-【项目列表】
-前端 apps/:
+[Project List]
+Frontend apps/:
   - <APP-id>: <name> (<tech_stack>) — <path>
-后端 services/:
+Backend services/:
   - <SVC-id>: <name> (<language>/<tech_stack>) — <path>
-（如项目列表为空，提示运行 /process-requirements 来注册项目）
+(If the project list is empty, prompt the user to run /process-requirements to register projects)
 
-【已完成】
-共 <N> 个功能已完成
-上次会话: <claude-progress.txt 中最后一次 SESSION END 的摘要，如没有则写"首次会话">
+[Completed]
+<N> features completed in total
+Last session: <summary of the last SESSION END in claude-progress.txt, or "First session" if none>
 
-【上次并行任务遗留】（如有中断的并行任务）
-⚠️ <FEAT-ID>: <标题> — 状态已重置为 pending，需重新实现
+[Leftover Parallel Tasks] (if any interrupted parallel tasks)
+⚠️ <FEAT-ID>: <title> — status has been reset to pending, needs re-implementation
 
-【进行中（需优先处理）】
-<列出所有 in_progress 功能（含所属项目），如没有则写"无">
+[In Progress (handle first)]
+<List all in_progress features (with their project), or write "None" if empty>
 
-【待处理队列】
-功能: 下一个 FEAT-XXX（<所属项目>）— <标题>
-变更: 下一个 CHANGE-XXX — <标题>
-队列中还有 <N> 个功能，<M> 个变更请求
+[Pending Queue]
+Feature: next FEAT-XXX (<project>) — <title>
+Change: next CHANGE-XXX — <title>
+<N> more features and <M> change requests in queue
 
-【文档状态】
-需求文档: <已解析 / 待解析（请运行 /process-requirements）>
-设计规范: <已提取 / 待提取（请运行 /process-design）>
+[Document Status]
+Requirements doc: <parsed / pending (run /process-requirements)>
+Design spec: <extracted / pending (run /process-design)>
 
-【本次计划】
-1. <具体计划>
-2. <后续步骤>
+[Plan for This Session]
+1. <specific plan>
+2. <next steps>
 ================
 ```
 
-## 步骤 5：等待用户确认
+## Step 5: Wait for User Confirmation
 
-询问用户是否有变更或新输入。如果没有，按计划继续。
+Ask the user if there are any changes or new inputs. If not, proceed as planned.
 
-## 注意事项
+## Notes
 
-- 有 `in_progress` 功能时，必须优先恢复，不得开始新功能
-- `features.json` 为空时，提示用户运行 `/process-requirements`
-- `docs/design/assets/` 有图片但没有 `extracted/design-spec.md` 时，提示运行 `/process-design`
+- When there are `in_progress` features, they must be resumed first — do not start new features
+- When `features.json` is empty, prompt the user to run `/process-requirements`
+- When `docs/design/assets/` has images but no `extracted/design-spec.md`, prompt the user to run `/process-design`
