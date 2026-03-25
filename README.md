@@ -1,3 +1,5 @@
+# 使用切换到en分支，main只是用来阅读的
+
 > **[FOR HUMANS ONLY]** This file is not part of the project context. Claude Code does not need to read README.md.
 
 # Harness Engineering — Claude Code 开发模板
