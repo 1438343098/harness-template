@@ -1,0 +1,8 @@
+{
+  "_comment": "并行调度清单。由 Orchestrator 维护，子 Agent 只读。会话中断重启时用于检测遗留任务。",
+  "max_parallel": 3,
+  "stall_timeout_minutes": 30,
+  "active_session": null,
+  "agents": [],
+  "last_updated": "2026-03-26T00:00:00Z"
+}

@@ -1,0 +1,8 @@
+{
+  "_comment": "此文件由 Claude Code 自动维护。记录用户的决策偏好，达到进化阈值后自动成为默认值。",
+  "evolution_threshold": 3,
+  "preferences": {},
+  "decision_log": [],
+  "last_evolved": null,
+  "last_updated": "2026-03-25T00:00:00Z"
+}

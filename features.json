@@ -1,0 +1,34 @@
+{
+  "_comment": "Harness Engineering 功能状态机。由 Claude Code 自动维护，请勿手动大幅修改。",
+  "project": {
+    "name": "待填写",
+    "description": "待填写 — 运行 /process-requirements 后自动填充",
+    "target_user": "待填写",
+    "created_at": "2026-03-25T00:00:00Z",
+    "repository": ""
+  },
+  "projects": {
+    "_comment": "注册所有子项目（前端 apps/，后端 services/）",
+    "apps": [],
+    "services": []
+  },
+  "summary": {
+    "total": 0,
+    "pending": 0,
+    "in_progress": 0,
+    "done": 0,
+    "deprecated": 0,
+    "changes_pending": 0,
+    "last_updated": "2026-03-25T00:00:00Z"
+  },
+  "features": [],
+  "change_requests": [],
+  "ambiguities": [],
+  "design_assets": {
+    "processed": false,
+    "files": [],
+    "spec_file": "docs/design/extracted/design-spec.md"
+  },
+  "requirements_processed": false,
+  "last_updated": "2026-03-25T00:00:00Z"
+}

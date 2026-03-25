@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(npm run*)",
+      "Bash(npm install*)",
+      "Bash(npx*)",
+      "Bash(pip install*)",
+      "Bash(pip run*)",
+      "Bash(python*)",
+      "Bash(node*)",
+      "Bash(cat*)",
+      "Bash(ls*)",
+      "Bash(find*)",
+      "Bash(grep*)",
+      "Bash(tail*)",
+      "Bash(head*)",
+      "Bash(mkdir*)",
+      "Bash(touch*)",
+      "Bash(cp*)",
+      "Bash(mv*)",
+      "Bash(echo*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(sudo rm*)",
+      "Bash(chmod 777*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard HEAD~*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');const f='features.json';if(fs.existsSync(f)){try{const d=JSON.parse(fs.readFileSync(f,'utf8'));const ip=(d.features||[]).filter(x=>x.status==='in_progress');if(ip.length>0){console.warn('\\n⚠️  提醒: 以下功能仍处于 in_progress 状态: '+ip.map(x=>x.id+' '+x.title).join(', ')+'\\n请运行 /session-end 更新状态或确认下次继续。');}}catch(e){}}process.exit(0);\""
+          }
+        ]
+      }
+    ]
+  }
+}
