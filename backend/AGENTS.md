@@ -1,75 +1,75 @@
-# backend/ 目录导航 — AGENTS.md
+# backend/ Directory Navigation — AGENTS.md
 
-> 后端服务代码目录。技术栈在 `features.json` 的 `project.tech_stack.backend` 中定义。
+> Backend service code directory. The tech stack is defined in `features.json` under `project.tech_stack.backend`.
 
 ---
 
-## 推荐目录约定
+## Recommended Directory Convention
 
-> 技术栈确定后 Claude Code 会创建实际结构。以下为参考约定。
+> Claude Code will create the actual structure once the tech stack is determined. The following is a reference convention.
 
 ```
 backend/
 ├── AGENTS.md
 ├── src/
-│   ├── routes/         # API 路由定义
-│   ├── controllers/    # 请求处理层
-│   ├── services/       # 业务逻辑层
-│   ├── models/         # 数据模型/Schema
-│   ├── middleware/     # 中间件（认证、日志、错误处理）
-│   ├── utils/          # 工具函数
-│   └── types/          # TypeScript 类型定义
-├── tests/              # 测试文件
-├── migrations/         # 数据库迁移文件
-├── .env.example        # 环境变量示例（不含真实值）
-└── package.json 或 pyproject.toml
+│   ├── routes/         # API route definitions
+│   ├── controllers/    # Request handling layer
+│   ├── services/       # Service layer
+│   ├── models/         # Data models / Schema
+│   ├── middleware/     # Middleware (auth, logging, error handling)
+│   ├── utils/          # Utility functions
+│   └── types/          # TypeScript type definitions
+├── tests/              # Test files
+├── migrations/         # Database migration files
+├── .env.example        # Environment variable example (no real values)
+└── package.json or pyproject.toml
 ```
 
 ---
 
-## API 设计规范
+## API Design Standards
 
-### RESTful 约定
+### RESTful Convention
 
 ```
-GET    /api/v1/<资源>          # 列表
-GET    /api/v1/<资源>/:id      # 详情
-POST   /api/v1/<资源>          # 创建
-PUT    /api/v1/<资源>/:id      # 完整更新
-PATCH  /api/v1/<资源>/:id      # 部分更新
-DELETE /api/v1/<资源>/:id      # 删除
+GET    /api/v1/<resource>          # List
+GET    /api/v1/<resource>/:id      # Detail
+POST   /api/v1/<resource>          # Create
+PUT    /api/v1/<resource>/:id      # Full update
+PATCH  /api/v1/<resource>/:id      # Partial update
+DELETE /api/v1/<resource>/:id      # Delete
 ```
 
-### 统一响应格式
+### Unified Response Format
 
 ```json
-// 成功
+// Success
 { "code": 0, "message": "success", "data": { ... } }
 
-// 错误
-{ "code": <错误码>, "message": "<可读错误描述>", "data": null }
+// Error
+{ "code": <error code>, "message": "<human-readable error description>", "data": null }
 ```
 
 ---
 
-## 安全规范（强制）
+## Security Standards (Mandatory)
 
-**必须：**
-- 所有 API 输入必须验证（类型、长度、格式）
-- 密码必须使用 bcrypt 或 argon2 哈希
-- JWT 密钥必须在环境变量中，不得硬编码
-- 数据库查询使用参数化查询，防止 SQL 注入
+**Required:**
+- All API inputs must be validated (type, length, format)
+- Passwords must be hashed using bcrypt or argon2
+- JWT secrets must be in environment variables; hardcoding is not allowed
+- Database queries must use parameterized queries to prevent SQL injection
 
-**禁止：**
-- 代码中硬编码密码、密钥、Token
-- 返回详细的数据库错误信息给客户端
-- 在日志中记录密码或完整 Token
+**Prohibited:**
+- Hardcoding passwords, secrets, or tokens in code
+- Returning detailed database error messages to clients
+- Logging passwords or full tokens
 
 ---
 
-## 环境变量管理
+## Environment Variable Management
 
-`.env.example` 中列出所有必需环境变量（无真实值）：
+`.env.example` lists all required environment variables (no real values):
 ```env
 DATABASE_URL=
 JWT_SECRET=
@@ -77,11 +77,11 @@ PORT=3000
 NODE_ENV=development
 ```
 
-实际值放在 `.env`，必须在 `.gitignore` 中排除。
+Actual values go in `.env`, which must be excluded via `.gitignore`.
 
 ---
 
-## 查看后端功能状态
+## View Backend Feature Status
 
 ```bash
 cat features.json | grep -A8 '"type": "backend"'
@@ -89,4 +89,4 @@ cat features.json | grep -A8 '"type": "backend"'
 
 ---
 
-*更新: 2026-03-25 | 技术栈确定后此文件会更新*
+*Updated: 2026-03-25 | This file will be updated once the tech stack is determined*

@@ -1,112 +1,112 @@
-# 技能: process-design — 设计解析
+# Skill: process-design — Design Parsing
 
-将用户提供的混乱设计稿（截图/图片/Figma导出）解析为结构化的设计规范。
+Parse messy design mockups provided by the user (screenshots/images/Figma exports) into a structured design spec.
 
-## 前置条件
+## Prerequisites
 
-用户已在以下位置提供设计文件：
-- `docs/design/assets/` — 图片文件
-- 或在对话中直接发送图片
+The user has provided design files in one of the following locations:
+- `docs/design/assets/` — image files
+- Or images sent directly in the conversation
 
-## 步骤 0：阅读设计解读规范
+## Step 0: Read the Design Intake Guidelines
 
-必须先阅读 `docs/design/DESIGN_INTAKE.md`，了解 A/B/C/D 四级处理规则。
+Must read `docs/design/DESIGN_INTAKE.md` first to understand the A/B/C/D four-tier processing rules.
 
-## 步骤 1：定位设计文件
+## Step 1: Locate Design Files
 
 ```bash
 ls docs/design/assets/
 ```
 
-列出所有图片文件，按文件名排序，推断页面名称。
+List all image files, sort by filename, and infer page names.
 
-**如果用户提供了 Figma 链接：**
+**If the user provided a Figma link:**
 ```
-Claude Code 无法直接访问 Figma 链接。
-请在 Figma 中选择画框 → 右键 → Export → PNG（2x分辨率）
-将导出图片放入 docs/design/assets/ 目录，然后重新运行 /process-design
-```
-
-## 步骤 2：判断每张图片的质量等级
-
-- **A类**：Figma 精准导出，文字清晰，颜色准确
-- **B类**：普通截图，大体清晰，细节稍模糊
-- **C类**：照片拍摄、低分辨率、压缩严重
-- **D类**：无图片，只有文字描述
-
-## 步骤 3：逐一分析每张设计图
-
-对每张图片，按以下框架分析：
-
-### 页面级别
-```
-页面名称: <推断的页面名称>
-页面路由: /<路径>
-页面用途: <功能目的>
-质量等级: A / B / C
+Claude Code cannot access Figma links directly.
+Please select a frame in Figma → right-click → Export → PNG (2x resolution)
+Place the exported images in the docs/design/assets/ directory, then re-run /process-design
 ```
 
-### 颜色分析（按 DESIGN_INTAKE.md 对应等级规则处理）
-```
-主色 (Primary): #xxxxxx
-辅色 (Secondary): #xxxxxx
-背景色: #xxxxxx
-卡片背景: #xxxxxx
-文字主色: #xxxxxx
-文字次色: #xxxxxx
-边框色: #xxxxxx
-成功色: #xxxxxx
-警告色: #xxxxxx
-错误色: #xxxxxx
-```
+## Step 2: Assess the Quality Level of Each Image
 
-### 字体分析
+- **Class A**: Precise Figma export, text is sharp, colors are accurate
+- **Class B**: Regular screenshot, generally clear, minor detail blur
+- **Class C**: Photo-taken, low resolution, heavily compressed
+- **Class D**: No image, text description only
+
+## Step 3: Analyze Each Design Image Individually
+
+For each image, analyze using the following framework:
+
+### Page Level
 ```
-H1标题: <字号>px / <字重>
-H2标题: <字号>px / <字重>
-正文: <字号>px / Regular
-辅助文字: <字号>px
-字体族: <如可识别，否则写"系统默认">
+Page Name: <inferred page name>
+Page Route: /<path>
+Page Purpose: <functional purpose>
+Quality Level: A / B / C
 ```
 
-### 间距分析
+### Color Analysis (follow the corresponding tier rules in DESIGN_INTAKE.md)
 ```
-页面边距: <值>px
-组件间距: <值>px
-内边距: <常用值>px
-圆角: <常用值>px
+Primary: #xxxxxx
+Secondary: #xxxxxx
+Background: #xxxxxx
+Card Background: #xxxxxx
+Text Primary: #xxxxxx
+Text Secondary: #xxxxxx
+Border: #xxxxxx
+Success: #xxxxxx
+Warning: #xxxxxx
+Error: #xxxxxx
 ```
 
-### 组件识别
+### Typography Analysis
+```
+H1 Heading: <size>px / <weight>
+H2 Heading: <size>px / <weight>
+Body Text: <size>px / Regular
+Supporting Text: <size>px
+Font Family: <if identifiable, otherwise write "System Default">
+```
 
-逐一检查以下组件是否存在，并记录其样式：
-- [ ] 顶部导航栏 (Header/Navbar)
-- [ ] 侧边菜单 (Sidebar)
-- [ ] 面包屑 (Breadcrumb)
-- [ ] 主按钮 / 次要按钮
-- [ ] 输入框 (Input)
-- [ ] 下拉选择 (Select)
-- [ ] 数据表格 (Table)
-- [ ] 卡片 (Card)
-- [ ] 标签/徽章 (Tag/Badge)
-- [ ] 模态弹窗 (Modal)
-- [ ] 加载状态 (Loading)
-- [ ] 空状态 (Empty State)
-- [ ] 分页 (Pagination)
-- [ ] 表单 (Form)
-- [ ] 图表 (Chart)
+### Spacing Analysis
+```
+Page Margin: <value>px
+Component Gap: <value>px
+Padding: <common value>px
+Border Radius: <common value>px
+```
 
-## 步骤 4：生成统一设计规范
+### Component Identification
 
-分析完所有图片后，合并为统一的设计 token，保存到 `docs/design/extracted/design-spec.md`：
+Check whether each of the following components exists and record its style:
+- [ ] Top Navigation Bar (Header/Navbar)
+- [ ] Side Menu (Sidebar)
+- [ ] Breadcrumb
+- [ ] Primary Button / Secondary Button
+- [ ] Input Field
+- [ ] Dropdown Select
+- [ ] Data Table
+- [ ] Card
+- [ ] Tag / Badge
+- [ ] Modal Dialog
+- [ ] Loading State
+- [ ] Empty State
+- [ ] Pagination
+- [ ] Form
+- [ ] Chart
+
+## Step 4: Generate Unified Design Spec
+
+After analyzing all images, merge into unified design tokens and save to `docs/design/extracted/design-spec.md`:
 
 ```markdown
-# 设计规范 (Design Spec)
-生成时间: <日期>
-来源图片: <文件列表>
-整体质量: <A/B/C>
+# Design Spec
+Generated: <date>
+Source Images: <file list>
+Overall Quality: <A/B/C>
 
-## 颜色 Token
+## Color Tokens
 --color-primary: #xxxxxx
 --color-primary-hover: #xxxxxx
 --color-secondary: #xxxxxx
@@ -119,7 +119,7 @@ H2标题: <字号>px / <字重>
 --color-warning: #FAAD14
 --color-error: #FF4D4F
 
-## 字体系统
+## Typography System
 --font-size-xs: 12px
 --font-size-sm: 14px
 --font-size-md: 16px
@@ -130,7 +130,7 @@ H2标题: <字号>px / <字重>
 --font-weight-medium: 500
 --font-weight-bold: 700
 
-## 间距系统
+## Spacing System
 --spacing-xs: 4px
 --spacing-sm: 8px
 --spacing-md: 16px
@@ -138,65 +138,65 @@ H2标题: <字号>px / <字重>
 --spacing-xl: 32px
 --spacing-2xl: 48px
 
-## 圆角
+## Border Radius
 --radius-sm: 4px
 --radius-md: 8px
 --radius-lg: 12px
 --radius-full: 9999px
 
-## 阴影
+## Shadows
 --shadow-sm: 0 1px 2px rgba(0,0,0,0.05)
 --shadow-md: 0 4px 6px rgba(0,0,0,0.07)
 --shadow-lg: 0 10px 15px rgba(0,0,0,0.1)
 
-## 页面列表
-<每个页面的路由、布局、主要组件清单>
+## Page List
+<route, layout pattern, and main component list for each page>
 
-## 组件规范
-<每个识别到的组件的详细规范>
+## Component Spec
+<detailed spec for each identified component>
 
-## 推断和假设说明
-<所有做了推断或假设的地方>
+## Inferences and Assumptions
+<all places where inferences or assumptions were made>
 ```
 
-## 步骤 5：更新 features.json
+## Step 5: Update features.json
 
-检查 features.json，为设计中识别的每个页面添加对应的前端功能（如尚未存在）。
+Check features.json and add corresponding frontend features for each page identified in the design (if not already present).
 
-将 `design_assets.processed` 更新为 `true`，填写 `files` 列表。
+Update `design_assets.processed` to `true` and fill in the `files` list.
 
-## 步骤 6：输出解析报告
+## Step 6: Output Parsing Report
 
 ```
-=== 设计解析完成 ===
+=== Design Parsing Complete ===
 
-【分析了 N 张设计图】
-- <图片1>: <页面名> — 质量: <等级>
-- <图片2>: <页面名> — 质量: <等级>
+[Analyzed N design images]
+- <image 1>: <page name> — Quality: <level>
+- <image 2>: <page name> — Quality: <level>
 
-【提取的页面列表】
-1. <页面名> — <路由> — <主要功能>
+[Extracted Page List]
+1. <page name> — <route> — <main functionality>
 2. ...
 
-【设计规范已保存至】
+[Design Spec Saved To]
 docs/design/extracted/design-spec.md
 
-【新增/确认的前端功能】
-- FEAT-xxx: <页面功能>
+[New/Confirmed Frontend Features]
+- FEAT-xxx: <page feature>
 - ...
 
-【设计稿中的问题/缺失】
-- <问题>: <如何处理>
+[Issues / Missing Elements in Design Mockups]
+- <issue>: <how it was handled>
 
-【推断和假设（请用户确认）】
-- <颜色推断>: 使用了 <色值>，原因: <图片质量级别>
-- <布局推断>: ...
+[Inferences and Assumptions (please confirm)]
+- <color inference>: used <color value>, reason: <image quality level>
+- <layout pattern inference>: ...
 
 ====================
 ```
 
-## 特殊情况
+## Special Cases
 
-**极差质量图片：** 不说"无法分析"，而是描述能看到的所有信息，对不确定部分用 Ant Design 标准填补，并标注"推断值"。
+**Very Poor Quality Images:** Do not say "unable to analyze". Instead, describe all visible information, fill in uncertain parts with Ant Design standards, and mark them as "inferred value".
 
-**纯文字描述（无图片）：** 根据应用类型选择设计系统（管理后台→Ant Design，用户产品→Material Design），生成符合该设计系统的 token。
+**Text Description Only (No Images):** Choose a design system based on the application type (admin panel → Ant Design, consumer product → Material Design), and generate tokens conforming to that design system.

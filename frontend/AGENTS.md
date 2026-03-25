@@ -1,46 +1,46 @@
-# frontend/ 目录导航 — AGENTS.md
+# frontend/ Directory Navigation — AGENTS.md
 
-> 前端应用代码目录。技术栈在 `features.json` 的 `project.tech_stack.frontend` 中定义。
+> Frontend application code directory. The tech stack is defined in `features.json` under `project.tech_stack.frontend`.
 
 ---
 
-## 推荐目录约定
+## Recommended Directory Convention
 
-> 技术栈确定后 Claude Code 会创建实际结构。以下为参考约定。
+> Claude Code will create the actual structure once the tech stack is determined. The following is a reference convention.
 
 ```
 frontend/
 ├── AGENTS.md
 ├── src/
-│   ├── components/     # 可复用 UI 组件（无状态）
-│   ├── pages/          # 页面组件（有状态，一文件一路由）
-│   ├── layouts/        # 布局组件
-│   ├── hooks/          # 自定义 Hooks（React 项目）
-│   ├── services/       # API 调用封装
-│   ├── store/          # 状态管理
-│   ├── utils/          # 工具函数
+│   ├── components/     # Reusable UI components (stateless)
+│   ├── pages/          # Page components (stateful, one file per route)
+│   ├── layouts/        # Layout components
+│   ├── hooks/          # Custom Hooks (React projects)
+│   ├── services/       # API call wrappers
+│   ├── store/          # State management
+│   ├── utils/          # Utility functions
 │   ├── styles/
-│   │   └── tokens.css  # 设计 token（来自 design-spec.md）
-│   └── types/          # TypeScript 类型定义
+│   │   └── tokens.css  # Design tokens (from design-spec.md)
+│   └── types/          # TypeScript type definitions
 ├── public/
 └── package.json
 ```
 
 ---
 
-## 设计 Token 引用规范
+## Design Token Reference Standard
 
-所有颜色、间距、字体必须使用 CSS 变量（来自 `docs/design/extracted/design-spec.md`）：
+All colors, spacing, and typography must use CSS variables (sourced from `docs/design/extracted/design-spec.md`):
 
 ```css
-/* ✅ 正确 */
+/* ✅ Correct */
 .btn-primary {
   background-color: var(--color-primary);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
 }
 
-/* ❌ 错误 — 禁止硬编码样式值 */
+/* ❌ Wrong — hardcoded style values are forbidden */
 .btn-primary {
   background-color: #1677FF;
   padding: 8px 16px;
@@ -49,28 +49,28 @@ frontend/
 
 ---
 
-## 代码规范
+## Code Standards
 
-**文件命名：**
-- 组件：`PascalCase.tsx`（如 `UserCard.tsx`）
-- 页面：`kebab-case.tsx`（如 `user-list.tsx`）
-- 工具：`camelCase.ts`（如 `formatDate.ts`）
+**File naming:**
+- Components: `PascalCase.tsx` (e.g. `UserCard.tsx`)
+- Pages: `kebab-case.tsx` (e.g. `user-list.tsx`)
+- Utilities: `camelCase.ts` (e.g. `formatDate.ts`)
 
-**组件结构顺序：**
-1. 导入
-2. 类型定义
-3. 组件实现
-4. 样式（如使用 CSS Modules）
-5. 默认导出
+**Component structure order:**
+1. Imports
+2. Type definitions
+3. Component implementation
+4. Styles (if using CSS Modules)
+5. Default export
 
-**API 调用必须包含：**
-- 加载状态处理
-- 错误状态处理
-- 超时处理（默认 10 秒）
+**API calls must include:**
+- Loading state handling
+- Error state handling
+- Timeout handling (default 10 seconds)
 
 ---
 
-## 查看前端功能状态
+## View Frontend Feature Status
 
 ```bash
 cat features.json | grep -A8 '"type": "frontend"'
@@ -78,4 +78,4 @@ cat features.json | grep -A8 '"type": "frontend"'
 
 ---
 
-*更新: 2026-03-25 | 技术栈确定后此文件会更新*
+*Updated: 2026-03-25 | This file will be updated once the tech stack is determined*

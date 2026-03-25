@@ -1,55 +1,55 @@
-# 技能: learn-preferences — 自进化偏好学习
+# Skill: learn-preferences — Self-Evolving Preference Learning
 
-分析用户的历史决策模式，将高频决策自动升级为默认值，减少重复确认。
+Analyze the user's historical decision patterns and automatically promote high-frequency decisions to defaults, reducing repeated confirmations.
 
-**触发方式：**
-- `/learn-preferences` — 手动触发
-- 自动触发：每次 `/session-end` 时静默执行
+**Trigger:**
+- `/learn-preferences` — manual trigger
+- Auto-trigger: silently executed on every `/session-end`
 
 ---
 
-## 步骤 1：读取决策日志
+## Step 1: Read Decision Log
 
 ```bash
 cat user-preferences.json
 ```
 
-提取 `decision_log` 中所有记录，按 `decision_key` 分组统计。
+Extract all records from `decision_log`, grouped and counted by `decision_key`.
 
 ---
 
-## 步骤 2：识别高频模式
+## Step 2: Identify High-Frequency Patterns
 
-对每个 `decision_key`，统计：
-- 该决策被做了多少次（`count`）
-- 最近 5 次选择了什么值（是否一致）
-- 当前是否已经是默认（`confirmed: true`）
+For each `decision_key`, count:
+- How many times this decision has been made (`count`)
+- What value was chosen in the last 5 instances (are they consistent?)
+- Whether it is already a default (`confirmed: true`)
 
-**进化规则：**
+**Evolution Rules:**
 
-| 条件 | 动作 |
-|------|------|
-| count >= threshold（默认3）且值完全一致 | 自动升级为默认，`confirmed: true` |
-| count >= threshold 但值不一致 | 报告冲突，询问用户选择哪个 |
-| count < threshold | 继续观察，不变更 |
-| 已经是默认但最近 2 次选了不同值 | 降级，重新观察 |
+| Condition | Action |
+|-----------|--------|
+| count >= threshold (default 3) and values are fully consistent | Auto-promote to default, `confirmed: true` |
+| count >= threshold but values are inconsistent | Report conflict, ask user which to choose |
+| count < threshold | Continue observing, no change |
+| Already a default but last 2 choices were a different value | Demote, restart observation |
 
 ---
 
-## 步骤 3：执行进化
+## Step 3: Execute Evolution
 
-对符合条件的偏好，更新 `user-preferences.json`：
+For preferences meeting the criteria, update `user-preferences.json`:
 
 ```json
 {
   "preferences": {
     "<decision_key>": {
-      "value": "<高频选择的值>",
-      "count": <次数>,
+      "value": "<high-frequency chosen value>",
+      "count": <count>,
       "confirmed": true,
       "source": "auto-learned",
       "evolved_at": "<ISO 8601>",
-      "description": "<这个偏好的含义>"
+      "description": "<meaning of this preference>"
     }
   }
 }
@@ -57,114 +57,114 @@ cat user-preferences.json
 
 ---
 
-## 步骤 4：更新 CLAUDE.md（如有重要偏好升级）
+## Step 4: Update CLAUDE.md (for significant preference promotions)
 
-当以下类型的偏好被自动升级时，同步更新 `CLAUDE.md` 中的默认行为描述：
+When the following types of preferences are auto-promoted, also update the default behavior description in `CLAUDE.md`:
 
-- 技术栈选择（`tech_stack.*`）
-- 代码风格（`code_style.*`）
-- 架构决策（`architecture.*`）
-- 命名约定（`naming.*`）
+- Tech stack choices (`tech_stack.*`)
+- Code style (`code_style.*`)
+- Architecture decisions (`architecture.*`)
+- Naming conventions (`naming.*`)
 
-**更新位置：** 在 `CLAUDE.md` 底部的 `## 自动学习的用户偏好` 章节追加。
+**Update location:** Append to the `## Auto-Learned User Preferences` section at the bottom of `CLAUDE.md`.
 
 ---
 
-## 步骤 5：输出进化报告
+## Step 5: Output Evolution Report
 
-**仅在 `/learn-preferences` 手动触发时输出；自动触发时静默执行，只有有新进化时才提示。**
+**Only output when `/learn-preferences` is triggered manually; when auto-triggered, execute silently and only notify the user if there are new evolutions.**
 
 ```
-=== 偏好进化报告 ===
+=== Preference Evolution Report ===
 
-【已自动升级为默认（无需再次确认）】
-✅ tech_stack.frontend = React + TypeScript（已选 4 次）
-✅ css_framework = Tailwind CSS（已选 3 次）
-✅ api_style = RESTful（已选 5 次）
+[Auto-promoted to defaults (no further confirmation needed)]
+✅ tech_stack.frontend = React + TypeScript (chosen 4 times)
+✅ css_framework = Tailwind CSS (chosen 3 times)
+✅ api_style = RESTful (chosen 5 times)
 
-【观察中（尚未达到阈值）】
-📊 database = PostgreSQL（已选 2/3 次）
-📊 test_framework = Vitest（已选 1/3 次）
+[Under observation (threshold not yet reached)]
+📊 database = PostgreSQL (chosen 2/3 times)
+📊 test_framework = Vitest (chosen 1/3 times)
 
-【发现冲突（需要您确认）】
-⚠️ auth_method: 2次选了 JWT，1次选了 Session
-   → 请选择默认值: [1] JWT  [2] Session
+[Conflicts detected (your confirmation needed)]
+⚠️ auth_method: chosen JWT 2 times, Session 1 time
+   → Please choose a default: [1] JWT  [2] Session
 
-【最近降级的偏好（使用模式改变）】
-🔄 ui_library: 之前默认 Ant Design，最近改用 shadcn/ui，已重置观察
+[Recently demoted preferences (usage pattern changed)]
+🔄 ui_library: previously defaulted to Ant Design, recently switched to shadcn/ui, observation reset
 ====================
 ```
 
 ---
 
-## 可追踪的决策类型
+## Trackable Decision Types
 
-以下决策 Claude Code 会自动记录到 `decision_log`：
+The following decisions are automatically recorded by Claude Code to `decision_log`:
 
-### 技术选型类
+### Technology Stack
 
-| decision_key | 描述 | 示例值 |
-|-------------|------|--------|
-| `tech_stack.frontend` | 前端框架 | React, Vue, Next.js |
-| `tech_stack.backend` | 后端框架 | Express, FastAPI, NestJS |
-| `tech_stack.database` | 数据库 | PostgreSQL, MongoDB, MySQL |
-| `tech_stack.language.backend` | 后端语言 | TypeScript, Python, Go |
-| `ui_library` | UI 组件库 | Ant Design, shadcn/ui, Radix |
-| `css_framework` | CSS 方案 | Tailwind, CSS Modules, styled-components |
-| `auth_method` | 认证方式 | JWT, Session, OAuth |
-| `orm` | ORM/数据库工具 | Prisma, Drizzle, SQLAlchemy |
-| `api_style` | API 风格 | RESTful, GraphQL, tRPC |
-| `state_management` | 状态管理 | Zustand, Jotai, Redux |
+| decision_key | Description | Example Values |
+|-------------|-------------|----------------|
+| `tech_stack.frontend` | Frontend framework | React, Vue, Next.js |
+| `tech_stack.backend` | Backend framework | Express, FastAPI, NestJS |
+| `tech_stack.database` | Database | PostgreSQL, MongoDB, MySQL |
+| `tech_stack.language.backend` | Backend language | TypeScript, Python, Go |
+| `ui_library` | UI component library | Ant Design, shadcn/ui, Radix |
+| `css_framework` | CSS approach | Tailwind, CSS Modules, styled-components |
+| `auth_method` | Authentication method | JWT, Session, OAuth |
+| `orm` | ORM/database tool | Prisma, Drizzle, SQLAlchemy |
+| `api_style` | API style | RESTful, GraphQL, tRPC |
+| `state_management` | State management | Zustand, Jotai, Redux |
 
-### 代码风格类
+### Code Style
 
-| decision_key | 描述 | 示例值 |
-|-------------|------|--------|
-| `code_style.indent` | 缩进 | 2spaces, 4spaces, tabs |
-| `code_style.quotes` | 引号 | single, double |
-| `naming.component` | 组件命名 | PascalCase, kebab-case |
-| `naming.file.page` | 页面文件命名 | PascalCase, kebab-case |
-| `naming.api.route` | API 路由命名 | kebab-case, camelCase |
+| decision_key | Description | Example Values |
+|-------------|-------------|----------------|
+| `code_style.indent` | Indentation | 2spaces, 4spaces, tabs |
+| `code_style.quotes` | Quotes | single, double |
+| `naming.component` | Component naming | PascalCase, kebab-case |
+| `naming.file.page` | Page file naming | PascalCase, kebab-case |
+| `naming.api.route` | API route naming | kebab-case, camelCase |
 
-### 架构决策类
+### Architecture Decisions
 
-| decision_key | 描述 | 示例值 |
-|-------------|------|--------|
-| `architecture.api_prefix` | API 路径前缀 | /api/v1, /api, /v1 |
-| `architecture.error_format` | 错误响应格式 | {code,message,data}, {error,message} |
-| `architecture.folder_structure` | 目录组织方式 | feature-based, layer-based |
-| `architecture.monorepo` | 是否 Monorepo | true, false |
+| decision_key | Description | Example Values |
+|-------------|-------------|----------------|
+| `architecture.api_prefix` | API path prefix | /api/v1, /api, /v1 |
+| `architecture.error_format` | Error response format | {code,message,data}, {error,message} |
+| `architecture.folder_structure` | Directory organization | feature-based, layer-based |
+| `architecture.monorepo` | Whether monorepo | true, false |
 
 ---
 
-## 在会话中如何记录决策
+## How to Record Decisions During a Session
 
-每次 Claude Code 做出以下类型的决定时，自动追加到 `user-preferences.json` 的 `decision_log`：
+Each time Claude Code makes one of the following types of decisions, append it to `decision_log` in `user-preferences.json`:
 
 ```json
 {
   "timestamp": "<ISO 8601>",
   "decision_key": "tech_stack.frontend",
   "value": "React + TypeScript",
-  "context": "FEAT-001 — 用户在需求文档中指定",
+  "context": "FEAT-001 — user specified in requirements document",
   "source": "user_explicit | user_confirmed | auto_default | inferred"
 }
 ```
 
-**source 含义：**
-- `user_explicit` — 用户在需求文档或对话中明确指定
-- `user_confirmed` — Claude 询问后用户确认
-- `auto_default` — 已进化为默认，自动使用
-- `inferred` — Claude 推断（尚未被用户确认）
+**source meanings:**
+- `user_explicit` — User explicitly specified in the requirements document or conversation
+- `user_confirmed` — Claude asked and the user confirmed
+- `auto_default` — Already evolved to a default, used automatically
+- `inferred` — Claude inferred (not yet confirmed by the user)
 
 ---
 
-## 偏好查询接口
+## Preference Query Interface
 
-在实现功能时，Claude Code 应先查询偏好：
+When implementing features, Claude Code should query preferences first:
 
 ```
-检查 user-preferences.json，如果 <decision_key> 已有 confirmed: true 的偏好，
-直接使用该值，不必询问用户。
-在进度日志中记录"[偏好] 使用已学习的默认值: <key> = <value>"。
+Check user-preferences.json. If <decision_key> already has a confirmed: true preference,
+use that value directly without asking the user.
+Record in the progress log: "[preference] Using learned default: <key> = <value>".
 ```
