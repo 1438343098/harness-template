@@ -7,6 +7,7 @@
 用户已在以下位置提供需求：
 - `docs/prd/` 目录下的任意文件
 - 或直接粘贴在对话中的文字
+- 或只有一个模糊想法（此时先用 `kz-prd` 技能生成 PRD）
 
 ## Step 0：判断是否为迭代需求
 
@@ -17,6 +18,28 @@
 
 若为迭代需求 → 停止并告知用户改用 `/process-iteration`。
 若为首次需求 → 继续以下步骤。
+
+---
+
+## Step 0.5：检查是否需要先生成 PRD
+
+```bash
+ls docs/prd/
+```
+
+检查 `docs/prd/` 下是否存在**非模板**的用户需求文档（排除 `AGENTS.md` 和 `REQUIREMENTS_TEMPLATE.md`）。
+
+**若无任何文档，且用户只提供了模糊描述或口头想法：**
+
+→ 读取并执行 `.claude/skills/kz-prd/SKILL.md` 中定义的 `kz-prd` 技能：
+  1. 基于用户描述，逐一提问以收集完整需求信息
+  2. 若需求涉及表单控件（input、select、checkbox 等），额外读取 `.claude/skills/kz-prd/ref/form.md` 并针对每个控件补充提问
+  3. 根据收集到的信息生成结构化 PRD（Executive Summary → User Stories → Functional Requirements → Design Considerations → Risks & Roadmap）
+  4. 将生成的 PRD 保存到 `docs/prd/[feature-name].md`
+
+→ PRD 生成完毕后，继续 Step 1 进行解析。
+
+**若已有文档：** 跳过本步骤，直接进入 Step 1。
 
 ---
 

@@ -46,7 +46,8 @@ tail -50 claude-progress.txt
 |------|------|---------|
 | `/session-start` | 会话初始化 — 加载偏好、状态和项目列表；制定计划 | 每次会话开始时 |
 | `/session-end` | 会话收尾 — 更新状态，触发偏好进化 | 每次会话结束时 |
-| `/process-requirements` | 解析首次 PRD，注册项目，填充 features.json | 有新需求文档时 |
+| `kz-prd` | 从零生成标准 PRD — 提问引导、收集需求、输出结构化文档 | 只有想法还没有正式文档时（在 /process-requirements 之前） |
+| `/process-requirements` | 解析首次 PRD，注册项目，填充 features.json | 有需求文档时（可自动调用 kz-prd） |
 | `/process-iteration` | 解析迭代变更需求，生成 change_requests | 需求变更或产品迭代时 |
 | `/process-design` | 解析设计文件，提取设计规范 | 有新设计图时 |
 | `/implement-feature [id]` | 实现单个功能或变更（顺序模式） | 功能有依赖或共用同一应用时 |
