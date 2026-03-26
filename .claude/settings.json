@@ -24,15 +24,29 @@
       "Bash(touch*)",
       "Bash(cp*)",
       "Bash(mv*)",
-      "Bash(echo*)"
+      "Bash(echo*)",
+      "Bash(rm*)",
+      "Bash(/Users/edy/Documents/code/harness-template/progress.txt:*)",
+      "Bash(./update-index.sh)",
+      "Bash(./.claude/progress-cli.sh latest:*)",
+      "Bash(./.claude/progress-cli.sh stats:*)",
+      "Read(//Users/edy/Documents/code/harness-template/**)",
+      "Bash(./.claude/progress-cli.sh help:*)",
+      "Bash(git rm:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",
       "Bash(rm -rf /*)",
-      "Bash(sudo rm*)",
+      "Bash(sudo*)",
       "Bash(chmod 777*)",
       "Bash(git push --force*)",
       "Bash(git reset --hard HEAD~*)"
+    ],
+    "additionalDirectories": [
+      "/Users/edy/Documents/code/harness-template/.claude/progress/sessions",
+      "/Users/edy/Documents/code/harness-template/.claude/progress",
+      "/Users/edy/Documents/code/harness-template/.claude"
     ]
   },
   "hooks": {

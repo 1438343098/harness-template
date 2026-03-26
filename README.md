@@ -1,6 +1,6 @@
 # 使用切换到en分支，main只是用来阅读的
 
-> **[FOR HUMANS ONLY]** This file is not part of the project context. Claude Code does not need to read README.md.
+> **【仅供人类阅读】** 此文件不属于项目运行上下文，Claude Code 不需要读取 `README.md`。
 
 # Harness Engineering — Claude Code 开发模板
 
@@ -18,6 +18,27 @@
 用户的操作只有三件事：丢需求文档、丢设计图，然后每次开工 `/session-start`，收工 `/session-end`。
 
 **本质：用文件系统给无状态的 LLM 造了一个有状态的外壳。**
+
+---
+
+## 先看这个：3 分钟理解怎么用
+
+如果你觉得“快速开始”直接执行命令有点跳，这里先用一句话讲清楚：
+
+**这个模板的使用顺序是：先放资料 → 让 Claude 解析 → 按功能逐个实现 → 收工记账。**
+
+按角色看会更容易理解：
+
+- **你负责输入**：把需求文档放到 `docs/prd/`，把设计图放到 `docs/design/assets/`（可选）
+- **Claude 负责处理**：运行 `/process-requirements` 和 `/process-design` 后，自动整理功能清单和设计规范
+- **你和 Claude 一起开发**：用 `/implement-feature FEAT-xxx` 按优先级逐个实现
+- **会话收尾**：运行 `/session-end`，把这次进度写入 `claude-progress.txt`
+
+可以把它理解为一个固定闭环：
+
+```
+放资料 -> 解析资料 -> 实现功能 -> 记录进度 -> 下次继续
+```
 
 ---
 
@@ -124,11 +145,18 @@ Claude 自动读取上次进度，识别未完成功能，从中断点继续。*
 harness-template/
 ├── CLAUDE.md              ← Claude 主指令（每次会话自动读取）
 ├── AGENTS.md              ← 项目导航
+├── progress.txt           ← 进度摘要（链接到 .claude/progress/）
 ├── features.json          ← 功能状态机 + 项目注册表（自动维护）
-├── claude-progress.txt    ← 会话日志（自动维护）
 ├── user-preferences.json  ← 用户偏好（自动学习默认值）
 ├── .claude/
 │   ├── settings.json      ← 质量门禁配置
+│   ├── progress/          ← 分层进度日志系统
+│   │   ├── sessions/      ← 会话日志（按日期）
+│   │   ├── features/      ← 功能日志（按 FEAT-ID）
+│   │   ├── blocks/        ← 阻塞项记录
+│   │   ├── index.json     ← 元数据索引
+│   │   └── update-index.sh
+│   ├── progress-cli.sh    ← 日志查询工具
 │   └── commands/          ← 可用技能（Slash 命令）
 ├── docs/
 │   ├── prd/              ← 放你的需求文档（含迭代变更文档）
@@ -137,11 +165,26 @@ harness-template/
 │       └── extracted/    ← Claude 自动生成，勿手动修改
 ├── apps/                 ← 所有前端应用（多项目支持）
 │   ├── web/              ← 示例：用户端
-│   └── admin/            ← 示例：管理后台
+│   ├── admin/            ← 示例：管理后台
+│   └── AGENTS.md
 └── services/             ← 所有后端服务（多语言支持）
     ├── api/              ← 示例：Node.js 主 API
-    └── worker/           ← 示例：Python 后台任务
+    ├── worker/           ← 示例：Python 后台任务
+    └── AGENTS.md
 ```
+
+## 各目录是做什么的（按实际使用频率）
+
+- `docs/`：**输入区**。你把需求和设计放这里，Claude 从这里读取原始材料。
+- `features.json`：**任务总表**。记录功能状态（pending/in_progress/done）、依赖关系、所属项目。
+- `.claude/progress/`：**分层进度日志**。按会话、功能、阻塞项分文件存储，自动索引。查询用 `./.claude/progress-cli.sh`。
+- `user-preferences.json`：**偏好记忆**。你的技术选择会累计，达到阈值后自动变默认。
+- `.claude/commands/`：**操作命令库**。这里定义 `/session-start`、`/process-requirements` 等工作流命令。
+- `apps/`：**多前端项目容器**。例如 `apps/web`（用户端）、`apps/admin`（管理后台）、`apps/mobile`（移动端）。
+- `services/`：**多后端服务容器**。例如 `services/api`（主 API）、`services/worker`（后台任务）、`services/scheduler`（定时器）。
+- `AGENTS.md` / `CLAUDE.md`：**规则与导航**。前者讲”去哪找什么”，后者讲”Claude 必须怎么执行”。
+
+> 核心设计：采用 `apps/` + `services/` 多项目架构，兼容单体和分布式方案。一切以 `features.json` 中的项目注册为准。
 
 ---
 
@@ -171,16 +214,19 @@ A: 在 Figma 导出 PNG（2x），放入 `docs/design/assets/`。
 A: 将变更说明放入 `docs/prd/`（如 `iteration-001.md`），运行 `/process-iteration`。Claude 会分析影响范围，生成变更请求，不影响已完成的功能。
 
 **Q: 我有多个前端项目，比如官网 + 后台，怎么处理？**
-A: 在需求文档中说明，`/process-requirements` 会自动在 `apps/` 下创建对应子目录并注册到 `features.json`。每个子项目有独立的 AGENTS.md 和技术栈。
+A: 在需求文档中说明，`/process-requirements` 会自动在 `apps/` 下创建对应子目录（如 `apps/web`、`apps/admin`）并注册到 `features.json`。每个子项目有独立的 `package.json`、`AGENTS.md` 和技术栈选择。
 
 **Q: 后端需要用 Python 写 worker，用 Node 写 API，怎么处理？**
-A: 每个 `services/` 子目录可以独立技术栈。`features.json` 中每个 service 单独记录语言和框架，Claude Code 会按各自的规范生成代码。
+A: 每个 `services/` 子目录可以独立选择技术栈。在需求文档中说明，`/process-requirements` 会在 `services/` 下创建 `api` 和 `worker` 两个目录。`features.json` 中每个 service 单独记录语言和框架，Claude Code 会按各自的规范生成代码。
+
+**Q: 我只有一个前端和一个后端，能简化吗？**
+A: 不需要，架构已是最优设计。只需在需求文档中定义 1 个前端和 1 个后端，生成 `apps/web` 和 `services/api` 即可。该结构天然支持后续扩展到多项目，无需重构。
 
 **Q: Claude 每次都问同样的问题（比如用什么框架），能不能记住？**
 A: 会自动学习。同一个决策做 3 次后，自动成为默认值记入 `user-preferences.json`，之后不再询问。运行 `/learn-preferences` 可查看已学习的偏好。
 
 **Q: 怎么知道开发进度？**
-A: 运行 `/session-start` 即可看到实时进度，或查看 `features.json`。
+A: 有三种方式：1) 运行 `/session-start` 即可看到实时进度；2) 查看 `features.json` 功能状态；3) 运行 `./.claude/progress-cli.sh latest` 查看最新会话日志。
 
 ---
 
