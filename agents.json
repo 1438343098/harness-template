@@ -1,5 +1,5 @@
 {
-  "_comment": "并行调度清单。由 Orchestrator 维护，子 Agent 只读。会话中断重启时用于检测遗留任务。",
+  "_comment": "Parallel dispatch ledger. Maintained by the orchestrator; sub-agents read-only. Used to detect leftover tasks after session interrupt/restart.",
   "max_parallel": 3,
   "stall_timeout_minutes": 30,
   "active_session": null,

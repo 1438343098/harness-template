@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');const f='features.json';if(fs.existsSync(f)){try{const d=JSON.parse(fs.readFileSync(f,'utf8'));const ip=(d.features||[]).filter(x=>x.status==='in_progress');if(ip.length>0){console.warn('\\n⚠️  提醒: 以下功能仍处于 in_progress 状态: '+ip.map(x=>x.id+' '+x.title).join(', ')+'\\n请运行 /session-end 更新状态或确认下次继续。');}}catch(e){}}process.exit(0);\""
+            "command": "node -e \"const fs=require('fs');const f='features.json';if(fs.existsSync(f)){try{const d=JSON.parse(fs.readFileSync(f,'utf8'));const ip=(d.features||[]).filter(x=>x.status==='in_progress');if(ip.length>0){console.warn('\\n⚠️  Reminder: these features are still in_progress: '+ip.map(x=>x.id+' '+x.title).join(', ')+'\\nRun /session-end to update state or confirm you will continue next time.');}}catch(e){}}process.exit(0);\""
           }
         ]
       }

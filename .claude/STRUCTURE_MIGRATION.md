@@ -1,53 +1,53 @@
-# 📁 项目结构优化记录
+# 📁 Project structure change log
 
-## 优化时间
+## When
 2026-03-26
 
-## 🎯 优化目标
+## 🎯 Goal
 
-统一项目架构，从混杂的 `frontend/backend` + `apps/services` 双重结构优化为唯一标准的 **多项目容器架构**。
+Unify the layout: move from a mixed `frontend/backend` + `apps/services` setup to a single **multi-project container** model.
 
-## 📋 改动清单
+## 📋 What changed
 
-### ❌ 删除的目录
-- `frontend/` — 旧的单体项目模板
-- `backend/` — 旧的单体项目模板
+### ❌ Removed directories
+- `frontend/` — legacy monolith-style frontend template
+- `backend/` — legacy monolith-style backend template
 
-### ✅ 保留的目录
-- `apps/` — 前端应用容器（官方标准）
-- `services/` — 后端服务容器（官方标准）
+### ✅ Kept directories
+- `apps/` — frontend app container (canonical)
+- `services/` — backend service container (canonical)
 
-### 📝 新增文档
-- `apps/AGENTS.md` — 前端多项目结构说明
-- `services/AGENTS.md` — 后端多服务结构说明
-- `.claude/STRUCTURE_MIGRATION.md` — 本文档
+### 📝 New docs
+- `apps/AGENTS.md` — multi-frontend layout
+- `services/AGENTS.md` — multi-service layout
+- `.claude/STRUCTURE_MIGRATION.md` — this file
 
-### 🔧 更新的文件
-- `README.md` — 更新目录结构和 Q&A 部分
-- `.claude/settings.json` — 调整权限配置
-- `.claude/progress-cli.sh` — 补充进度查询工具文档
+### 🔧 Updated files
+- `README.md` — tree and Q&A
+- `.claude/settings.json` — permission tweaks
+- `.claude/progress-cli.sh` — progress CLI documentation
 
-## 🤔 为什么要改？
+## 🤔 Why change?
 
-### 原问题：结构冲突
+### Old problem: conflicting layouts
 
-| 问题 | 原因 | 影响 |
-|------|------|------|
-| 两套命名规范 | 同时存在 `frontend/` 和 `apps/` | 新手困惑，命令脚本维护困难 |
-| 特性不对应 | `features.json` 只支持 `apps/services` | 代码所在地 ≠ 注册地，导致跟踪困难 |
-| 文档重复 | `frontend/` 和 `apps/` 有两份 AGENTS.md | 易过时，维护成本高 |
-| 无法扩展 | `backend/` 假设单体架构 | 想加第二个后端服务要重构 |
+| Issue | Cause | Impact |
+|------|-------|--------|
+| Two naming schemes | Both `frontend/` and `apps/` existed | Confusing for newcomers; harder shell maintenance |
+| Registry mismatch | `features.json` only tracks `apps/services` | Code location ≠ registered location; tracking breaks |
+| Duplicate docs | `frontend/` and `apps/` each had AGENTS.md | Drift and higher maintenance cost |
+| Poor scaling | `backend/` assumed one service | Adding a second backend meant rework |
 
-### 新架构：统一且可扩展
+### New model: one standard, scalable
 
-✅ **唯一的标准** — 所有项目都在 `apps/` 或 `services/` 下  
-✅ **与 features.json 对齐** — 生成的代码位置与注册位置一致  
-✅ **天然多项目** — 从单体到分布式无需重构  
-✅ **简化文档** — 一套规范即可覆盖所有场景  
+✅ **Single standard** — all projects live under `apps/` or `services/`  
+✅ **Aligned with features.json** — generated code sits where it is registered  
+✅ **Multi-project by default** — monolith to distributed without restructuring  
+✅ **Simpler docs** — one convention covers every case  
 
-## 📚 使用指南
+## 📚 Usage
 
-### 单体项目（1 个前端 + 1 个后端）
+### Monolith-style (1 frontend + 1 backend)
 
 ```
 apps/web/
@@ -61,60 +61,60 @@ services/api/
 └── AGENTS.md
 ```
 
-**好处**：代码组织清晰，后续可轻松扩展。
+**Benefit:** Clear layout; easy to grow later.
 
-### 多项目场景（官网 + 后台 + 移动）
+### Multi-app (marketing + admin + mobile)
 
 ```
 apps/
-├── web/          # 用户端网站
-├── admin/        # 管理后台
-├── mobile/       # React Native 移动端
+├── web/          # Public site
+├── admin/        # Admin console
+├── mobile/       # React Native
 └── AGENTS.md
 
 services/
 ├── api/          # Node.js API
-├── worker/       # Python 后台任务
-├── scheduler/    # Node.js 定时器
+├── worker/       # Python worker
+├── scheduler/    # Node cron / scheduler
 └── AGENTS.md
 ```
 
-**好处**：一个模板支持任意规模，无需特殊处理。
+**Benefit:** One template for any scale; no special cases.
 
-## 🚀 迁移步骤
+## 🚀 Migration
 
-### 对现有项目的影响
+### If you already use this template
 
-**如果你已经在用这个模板**:
-- 代码文件位置不变（如果你按照规范使用）
-- `features.json` 不变，系统自动识别新结构
-- 无需手动迁移代码
+- File locations stay the same if you followed the convention
+- `features.json` unchanged; tooling expects the new layout
+- No manual code migration needed
 
-**如果你在 `frontend/` 或 `backend/` 下有自己的代码**:
+### If you still have code under `frontend/` or `backend/`
+
 ```bash
-# 手动迁移
+# Manual move
 mv frontend/src/* apps/web/src/
 mv backend/src/* services/api/src/
 ```
 
-### 对新项目的建议
+### For new projects
 
 ```bash
-# 1. 清空旧目录（如果存在）
+# 1. Remove legacy dirs if present
 rm -rf frontend backend
 
-# 2. 运行初始化
+# 2. Initialize session
 /session-start
 
-# 3. 解析需求（自动创建项目）
+# 3. Parse requirements (creates projects)
 /process-requirements
 
-# 完成！你的项目已在 apps/ 和 services/ 下了
+# Done — projects live under apps/ and services/
 ```
 
-## 📊 结构对比
+## 📊 Before / after
 
-### 旧结构（混杂）
+### Old (mixed)
 ```
 .
 ├── frontend/
@@ -122,14 +122,14 @@ rm -rf frontend backend
 ├── backend/
 │   └── src/
 ├── apps/
-│   └── (empty, 文档说这里是前端容器但没人用)
+│   └── (empty — docs said “frontend container” but unused)
 └── services/
-    └── (empty, 文档说这里是后端容器但没人用)
+    └── (empty — docs said “backend container” but unused)
 ```
 
-🔴 **问题**: `features.json` 指向 `apps/services`，但代码在 `frontend/backend`
+🔴 **Problem:** `features.json` pointed at `apps/services`, but code lived in `frontend/backend`.
 
-### 新结构（规范）
+### New (canonical)
 ```
 .
 ├── apps/
@@ -142,42 +142,40 @@ rm -rf frontend backend
     └── AGENTS.md
 ```
 
-🟢 **优点**: 一致、清晰、可扩展
+🟢 **Win:** Consistent, clear, extensible.
 
-## 🔍 快速验证
-
-验证结构正确性：
+## 🔍 Quick verification
 
 ```bash
-# 查看项目列表
+# Project registry
 jq '.projects' features.json
 
-# 查看前端应用
+# Frontend apps
 ls -la apps/
 
-# 查看后端服务
+# Backend services
 ls -la services/
 
-# 建议的输出
-# apps: 包含 web/ admin/ 等
-# services: 包含 api/ worker/ 等
+# Expected
+# apps: web/, admin/, …
+# services: api/, worker/, …
 ```
 
-## 📖 相关文档
+## 📖 Related docs
 
-- [README.md](../../README.md) — 项目总览
-- [AGENTS.md](../../AGENTS.md) — 导航指南
-- [apps/AGENTS.md](../../apps/AGENTS.md) — 前端项目结构
-- [services/AGENTS.md](../../services/AGENTS.md) — 后端服务结构
-- [features.json](../../features.json) — 项目状态
+- [README.md](../../README.md) — project overview
+- [AGENTS.md](../../AGENTS.md) — navigation
+- [apps/AGENTS.md](../../apps/AGENTS.md) — frontend layout
+- [services/AGENTS.md](../../services/AGENTS.md) — backend layout
+- [features.json](../../features.json) — registry and status
 
 ---
 
-**优化版本**: 1.0  
-**优化日期**: 2026-03-26  
-**优化者**: Claude Code  
+**Version:** 1.0  
+**Date:** 2026-03-26  
+**Author:** Claude Code  
 
-维护建议：
-- ✅ 每次 `/process-requirements` 后检查 `features.json.projects`
-- ✅ 不要直接在 `frontend/` 或 `backend/` 下创建代码
-- ✅ 定期使用 `./.claude/progress-cli.sh stats` 监控项目指标
+Maintenance tips:
+- ✅ After `/process-requirements`, review `features.json.projects`
+- ✅ Do not add new code under `frontend/` or `backend/`
+- ✅ Run `./.claude/progress-cli.sh stats` periodically to monitor health

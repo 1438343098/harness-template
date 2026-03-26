@@ -1,5 +1,5 @@
 {
-  "_comment": "此文件由 Claude Code 自动维护。记录用户的决策偏好，达到进化阈值后自动成为默认值。",
+  "_comment": "Maintained by Claude Code. Records user decision preferences; values become defaults after the evolution threshold.",
   "evolution_threshold": 3,
   "preferences": {},
   "decision_log": [],

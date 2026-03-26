@@ -1,73 +1,73 @@
 ================================================================================
-HARNESS ENGINEERING — 项目进度日志 📋
-模板版本: v1.0
-初始化时间: 2026-03-25
+HARNESS ENGINEERING — Project progress log 📋
+Template version: v1.0
+Initialized: 2026-03-25
 ================================================================================
 
-🔗 日志已迁移到分层结构！
+🔗 Logs moved to a layered layout!
 
-位置: .claude/progress/
-├── sessions/          — 会话日志（按日期）
-├── features/          — 功能日志（按 FEAT-ID）
-├── blocks/            — 阻塞项记录
-└── index.json         — 元数据索引
+Location: .claude/progress/
+├── sessions/          — session logs (by date)
+├── features/          — feature logs (by FEAT-ID)
+├── blocks/            — blocker records
+└── index.json         — metadata index
 
 ================================================================================
-📖 快速查询指南
+📖 Quick query guide
 ================================================================================
 
-方法 1️⃣ - 使用 CLI 工具（推荐）:
-  $ ./.claude/progress-cli.sh latest         # 查看最新进度
-  $ ./.claude/progress-cli.sh search FEAT-001 # 查询特定功能
-  $ ./.claude/progress-cli.sh features        # 列出所有功能
-  $ ./.claude/progress-cli.sh blocks          # 查看阻塞项
-  $ ./.claude/progress-cli.sh stats           # 统计信息
-  $ ./.claude/progress-cli.sh help            # 显示帮助
+Option 1 — CLI (recommended):
+  $ ./.claude/progress-cli.sh latest          # latest progress
+  $ ./.claude/progress-cli.sh search FEAT-001 # one feature
+  $ ./.claude/progress-cli.sh features        # all features
+  $ ./.claude/progress-cli.sh blocks          # blockers
+  $ ./.claude/progress-cli.sh stats           # statistics
+  $ ./.claude/progress-cli.sh help            # help
 
-方法 2️⃣ - 直接查看文件:
+Option 2 — read files:
   cat .claude/progress/sessions/2026-03-25.session.md
   cat .claude/progress/features/FEAT-001.log
   cat .claude/progress/index.json
 
-方法 3️⃣ - 查询索引:
+Option 3 — index preview:
   jq '.' .claude/progress/index.json | head -30
 
 ================================================================================
-📊 当前项目统计
+📊 Current stats (sample)
 ================================================================================
 
-📝 最新会话: 2026-03-25
-✨ 功能数: 0
-🚨 阻塞项: 0
-📋 总条目: 1
+📝 Latest session: 2026-03-25
+✨ Features: 0
+🚨 Blockers: 0
+📋 Total entries: 1
 
-详细统计请运行: ./.claude/progress-cli.sh stats
-
-================================================================================
-🔄 工作流程
-================================================================================
-
-1️⃣ 开始新会话时（Claude Code 自动）:
-   - 创建 sessions/YYYY-MM-DD.session.md
-   - 更新 index.json
-
-2️⃣ 记录新功能时:
-   - 创建 features/FEAT-XXX.log
-   - 更新 index.json
-
-3️⃣ 记录阻塞项时:
-   - 创建 blocks/BLOCK-XXX.md
-   - 更新 index.json
-
-运行 ./.claude/progress/update-index.sh 手动刷新索引
+For live stats run: ./.claude/progress-cli.sh stats
 
 ================================================================================
-✅ 设置完成！
+🔄 Workflow
 ================================================================================
 
-下一步:
-1. 将需求文档放入 docs/prd/ 目录
-2. 运行 ./.claude/progress-cli.sh latest 验证工作
-3. 开始开发 ✨
+1️⃣ New session (Claude Code):
+   - Create sessions/YYYY-MM-DD.session.md
+   - Update index.json
+
+2️⃣ New feature:
+   - Create features/FEAT-XXX.log
+   - Update index.json
+
+3️⃣ New blocker:
+   - Create blocks/BLOCK-XXX.md
+   - Update index.json
+
+Run ./.claude/progress/update-index.sh to refresh the index manually.
+
+================================================================================
+✅ Setup complete
+================================================================================
+
+Next steps:
+1. Add requirements under docs/prd/
+2. Run ./.claude/progress-cli.sh latest to verify
+3. Start building ✨
 
 ================================================================================

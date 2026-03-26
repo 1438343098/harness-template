@@ -1,16 +1,16 @@
-# 进度日志临时文件
+# Progress log temp files
 progress/**/*.tmp
 progress/**/*.swp
 progress/**/*.swo
 
-# 归档目录（如果需要）
+# Archives (optional)
 progress/archive/
 progress/**/*.zip
 progress/**/*.tar.gz
 
-# 系统文件
+# OS noise
 .DS_Store
 *.log~
 
-# 不追踪大型日志备份
+# Large backup trees
 progress/backup/

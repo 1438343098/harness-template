@@ -1,14 +1,14 @@
 {
-  "_comment": "Harness Engineering 功能状态机。由 Claude Code 自动维护，请勿手动大幅修改。",
+  "_comment": "Harness Engineering feature state machine. Maintained by Claude Code; avoid large manual edits.",
   "project": {
-    "name": "待填写",
-    "description": "待填写 — 运行 /process-requirements 后自动填充",
-    "target_user": "待填写",
+    "name": "TBD",
+    "description": "TBD — filled automatically after running /process-requirements",
+    "target_user": "TBD",
     "created_at": "2026-03-25T00:00:00Z",
     "repository": ""
   },
   "projects": {
-    "_comment": "注册所有子项目（前端 apps/，后端 services/）",
+    "_comment": "Register all sub-projects (frontend apps/, backend services/)",
     "apps": [],
     "services": []
   },

@@ -1,39 +1,40 @@
-# 📱 Apps — 前端应用容器
+# 📱 Apps — frontend application container
 
-## 概述
+## Overview
 
-`apps/` 目录存放所有前端应用。每个前端项目（Web、Admin、Mobile 等）都是这里的一个子目录。
+`apps/` holds every frontend application. Each app (web, admin, mobile, etc.) is a subdirectory here.
 
-## 结构
+## Layout
 
 ```
 apps/
-├── web/              # 示例：用户端网站
+├── web/              # Example: public-facing site
 │   ├── package.json
 │   ├── src/
 │   └── AGENTS.md
-├── admin/            # 示例：管理后台
+├── admin/            # Example: admin console
 │   ├── package.json
 │   ├── src/
 │   └── AGENTS.md
-└── mobile/           # 示例：移动应用
+└── mobile/           # Example: mobile client
     ├── package.json
     ├── src/
     └── AGENTS.md
 ```
 
-## 工作流
+## Workflow
 
-### 首次创建前端项目
+### First-time app scaffolding
 
-运行：
+Run:
+
 ```bash
 /process-requirements
 ```
 
-Claude 会在 `apps/` 下自动创建子目录，并在 `features.json` 的 `projects.apps[]` 中注册。
+Claude creates subfolders under `apps/` and registers them in `features.json` under `projects.apps[]`.
 
-### 快速启动前端
+### Run a frontend locally
 
 ```bash
 cd apps/web
@@ -41,34 +42,34 @@ npm install
 npm run dev
 ```
 
-### 实现功能
+### Implement a feature
 
 ```bash
 /implement-feature FEAT-001
 ```
 
-Claude 会在对应的 `apps/xxx/src/` 下生成代码。
+Claude generates code under the matching `apps/<name>/src/`.
 
-## 技术栈支持
+## Supported stacks
 
-- **框架**：React / Vue 3 / Next.js
-- **语言**：TypeScript / JavaScript
-- **包管理**：npm / pnpm
-- **构建**：Vite / Webpack / Next.js
+- **Frameworks**: React / Vue 3 / Next.js
+- **Languages**: TypeScript / JavaScript
+- **Package managers**: npm / pnpm
+- **Build**: Vite / Webpack / Next.js
 
-## 命名规范
+## Naming
 
-- 目录名小写：`web`、`admin`、`mobile`
-- 每个应用独立的 `package.json`
-- 在 `features.json` 中注册为 `web`、`admin` 等
+- Lowercase directory names: `web`, `admin`, `mobile`
+- One `package.json` per app
+- Register the same ids in `features.json` (`web`, `admin`, …)
 
-## 相关文档
+## Related docs
 
-- [features.json](../features.json) — 查看已注册的应用
-- [CLAUDE.md](../CLAUDE.md) — 开发规范
-- [docs/prd/](../docs/prd/) — 需求文档
+- [features.json](../features.json) — registered apps
+- [CLAUDE.md](../CLAUDE.md) — engineering rules
+- [docs/prd/](../docs/prd/) — requirements
 
 ---
 
-**最后更新**: 2026-03-26  
-**维护者**: Claude Code
+**Last updated:** 2026-03-26  
+**Maintainer:** Claude Code

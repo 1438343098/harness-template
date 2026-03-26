@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# 进度日志 CLI 工具
-# 用法: ./.claude/progress-cli.sh <命令> [参数]
+# Progress log CLI
+# Usage: ./.claude/progress-cli.sh <command> [args]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROGRESS_DIR="$SCRIPT_DIR/progress"
 INDEX_FILE="$PROGRESS_DIR/index.json"
 
-# 颜色定义
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -20,49 +20,48 @@ print_header() {
   echo -e "${BLUE}════════════════════════════════════════${NC}"
 }
 
-# 查看最新进度
+# Latest progress
 latest() {
-  print_header "📋 最新进度"
+  print_header "📋 Latest progress"
   
   if [ -f "$INDEX_FILE" ]; then
     latest_session=$(jq -r '.latest_session' "$INDEX_FILE" 2>/dev/null)
     if [ -f "$PROGRESS_DIR/sessions/${latest_session}.session.md" ]; then
-      echo -e "${GREEN}最新会话: ${latest_session}${NC}"
+      echo -e "${GREEN}Latest session: ${latest_session}${NC}"
       echo ""
       tail -30 "$PROGRESS_DIR/sessions/${latest_session}.session.md"
     fi
   else
-    echo -e "${RED}index.json 未找到${NC}"
+    echo -e "${RED}index.json not found${NC}"
   fi
 }
 
-# 查询特定功能
+# Search feature or keyword
 search() {
   local query=$1
-  print_header "🔍 搜索: $query"
+  print_header "🔍 Search: $query"
   
   if [[ $query =~ ^FEAT- ]]; then
     feat_file="$PROGRESS_DIR/features/${query}.log"
     if [ -f "$feat_file" ]; then
       cat "$feat_file"
     else
-      echo -e "${RED}功能 $query 未找到${NC}"
+      echo -e "${RED}Feature $query not found${NC}"
     fi
   else
-    # 模糊搜索
-    echo -e "${YELLOW}在所有日志中搜索...${NC}"
+    echo -e "${YELLOW}Searching all logs...${NC}"
     find "$PROGRESS_DIR" -type f \( -name "*.md" -o -name "*.log" \) -exec grep -l "$query" {} \;
   fi
 }
 
-# 列出所有功能
+# List features
 features() {
-  print_header "✨ 功能列表"
+  print_header "✨ Features"
   
   if [ -f "$INDEX_FILE" ]; then
     count=$(jq '.statistics.total_features' "$INDEX_FILE" 2>/dev/null)
     if [ "$count" -eq 0 ]; then
-      echo -e "${YELLOW}暂无功能记录${NC}"
+      echo -e "${YELLOW}No feature logs yet${NC}"
     else
       jq -r '.features[]' "$INDEX_FILE" 2>/dev/null | while read feat; do
         echo -e "${GREEN}✓ $feat${NC}"
@@ -71,14 +70,14 @@ features() {
   fi
 }
 
-# 列出阻塞项
+# List blockers
 blocks() {
-  print_header "🚨 阻塞项"
+  print_header "🚨 Blockers"
   
   if [ -f "$INDEX_FILE" ]; then
     blocks=$(jq '.statistics.total_blocks' "$INDEX_FILE" 2>/dev/null)
     if [ "$blocks" -eq 0 ]; then
-      echo -e "${GREEN}✓ 无阻塞项${NC}"
+      echo -e "${GREEN}✓ No blockers${NC}"
     else
       ls -1 "$PROGRESS_DIR/blocks/" 2>/dev/null | while read block; do
         echo -e "${RED}⚠ $block${NC}"
@@ -87,52 +86,52 @@ blocks() {
   fi
 }
 
-# 统计信息
+# Statistics
 stats() {
-  print_header "📊 统计信息"
+  print_header "📊 Statistics"
   
   if [ -f "$INDEX_FILE" ]; then
     jq '.statistics' "$INDEX_FILE"
     echo ""
-    echo "📁 日志目录: $PROGRESS_DIR"
+    echo "📁 Log root: $PROGRESS_DIR"
   fi
 }
 
-# 帮助
+# Help
 usage() {
   cat << 'HELP'
-进度日志 CLI - 快速查询项目进度
+Progress CLI — quick project progress queries
 
-用法:
-  ./.claude/progress-cli.sh <命令> [参数]
+Usage:
+  ./.claude/progress-cli.sh <command> [args]
 
-命令:
-  latest              显示最新进度 (最后 30 行)
-  search <FEAT-ID>    查询特定功能 (例: search FEAT-001)
-  search <关键字>     模糊搜索关键字
-  features            列出所有功能
-  blocks              显示所有阻塞项
-  stats               显示统计信息
-  help                显示此帮助
+Commands:
+  latest              Show latest progress (last 30 lines)
+  search <FEAT-ID>    Open a feature log (e.g. search FEAT-001)
+  search <keyword>    Fuzzy search across logs
+  features            List all features
+  blocks              List blockers
+  stats               Show statistics
+  help                Show this help
 
-例子:
+Examples:
   ./.claude/progress-cli.sh latest
   ./.claude/progress-cli.sh search FEAT-001
-  ./.claude/progress-cli.sh search "数据库"
+  ./.claude/progress-cli.sh search "database"
   ./.claude/progress-cli.sh features
   ./.claude/progress-cli.sh stats
 
 HELP
 }
 
-# 主入口
+# Entry point
 case "${1:-latest}" in
   latest)
     latest
     ;;
   search)
     if [ -z "$2" ]; then
-      echo -e "${RED}错误: 缺少搜索参数${NC}"
+      echo -e "${RED}Error: search needs an argument${NC}"
       usage
       exit 1
     fi
@@ -151,7 +150,7 @@ case "${1:-latest}" in
     usage
     ;;
   *)
-    echo -e "${RED}未知命令: $1${NC}"
+    echo -e "${RED}Unknown command: $1${NC}"
     echo ""
     usage
     exit 1

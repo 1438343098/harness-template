@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 自动更新 index.json 索引
+# Refresh index.json from disk
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INDEX_FILE="$SCRIPT_DIR/index.json"
@@ -11,7 +11,7 @@ update_index() {
   local blocks=$(ls -1 "$SCRIPT_DIR/blocks/" 2>/dev/null | wc -l)
   local latest=$(ls -1 "$SCRIPT_DIR/sessions/" 2>/dev/null | sort | tail -1 | sed 's/.session.md//')
   
-  # 构建 sessions 数组
+  # Build sessions array
   local sessions_json="["
   first=true
   for session_file in "$SCRIPT_DIR/sessions/"*.session.md; do
@@ -27,7 +27,7 @@ update_index() {
   done
   sessions_json+="]"
   
-  # 构建 features 数组
+  # Build features array
   local features_json="["
   first=true
   for feat_file in "$SCRIPT_DIR/features/"*.log; do
@@ -43,7 +43,7 @@ update_index() {
   done
   features_json+="]"
   
-  # 更新 index.json
+  # Write index.json
   jq --arg sessions "$sessions_json" \
      --arg features "$features_json" \
      --arg latest "$latest" \
@@ -56,7 +56,7 @@ update_index() {
       .latest_session = $latest' "$INDEX_FILE" > "$INDEX_FILE.tmp" && \
   mv "$INDEX_FILE.tmp" "$INDEX_FILE"
   
-  echo "✓ 索引已更新"
+  echo "✓ Index updated"
 }
 
 update_index
