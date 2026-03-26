@@ -1,161 +1,161 @@
-# Design Interpretation Spec — DESIGN_INTAKE.md
+# 设计解读规范 — DESIGN_INTAKE.md
 
-> Claude Code must read this file when interpreting design mockups. Defines how to handle design inputs of various quality levels.
-> **Core principle: never say "unable to analyze" — always infer and annotate uncertainty.**
-
----
-
-## Four-Level Design Input Processing Rules
-
-### Class A — High quality (precise Figma export, 2x resolution)
-
-**Characteristics:** Text clearly legible, colors accurate, spacing evident
-**Handling:** Precisely extract all design tokens, use directly for implementation
+> Claude Code 在解读设计稿时必须读取本文件。定义了如何处理各种质量的设计输入。
+> **核心原则：不得说"无法分析" — 必须推断并标注不确定性。**
 
 ---
 
-### Class B — Medium quality (1x screenshot, compressed, ordinary screen capture)
+## 四级设计输入处理规则
 
-**Characteristics:** Generally clear, slightly blurry details, text mostly legible
-**Handling:**
-- Colors: inferred value, annotated as "possible ±10% error"
-- Spacing: estimated value, annotated as "estimated"
-- Font size: estimated value, corrected against standard scale ratios
+### A 级 — 高质量（精确的 Figma 导出，2x 分辨率）
 
----
-
-### Class C — Low quality (photo taken, highly compressed, hand-drawn sketch)
-
-**Characteristics:** Low resolution, photo noise, hand-drawn or whiteboard photos
-**Handling:**
-- Colors: identify tone only (warm/cool/neutral), substitute with color palette below
-- Layout: identify overall layout pattern only (top bar + content, sidebar + content, etc.)
-- Components: identify component type only, do not extract specific styles
-- Note: "Inferred implementation based on low-quality design; user review recommended"
+**特征：** 文字清晰易读，颜色准确，间距明显
+**处理方式：** 精确提取所有设计令牌，直接用于实现
 
 ---
 
-### Class D — No design (text description only)
+### B 级 — 中等质量（1x 截图、压缩图、普通屏幕截图）
 
-**Characteristics:** User describes what they want with no visual reference
-**Handling:**
-- Admin dashboard → use Ant Design spec
-- User-facing web app → use Material Design spec
-- Mobile app → use platform native spec (iOS/Android)
-- Note: "Design spec AI-generated, based on <reference design system>"
-
----
-
-## Color Inference Palette (for Class B/C)
-
-### Blue tones (tech / business / SaaS)
-```
-Primary:    #1677FF  (Ant Design Blue)
-Dark:       #0958D9
-Light:      #69B1FF
-Background: #E6F4FF
-```
-
-### Green tones (finance / health / nature)
-```
-Primary:    #52C41A
-Dark:       #389E0D
-Light:      #95DE64
-Background: #F6FFED
-```
-
-### Purple tones (creative / premium / AI)
-```
-Primary:    #722ED1
-Dark:       #531DAB
-Light:      #B37FEB
-Background: #F9F0FF
-```
-
-### Orange tones (e-commerce / energy / consumer)
-```
-Primary:    #FA8C16
-Dark:       #D46B08
-Light:      #FFD591
-Background: #FFF7E6
-```
-
-### Neutral colors (universal, used in all types)
-```
-White background:   #FFFFFF
-Light gray bg:      #F5F5F5 / #FAFAFA
-Card background:    #FFFFFF
-Primary text:       #1C1C1E (deep black, modern)
-Secondary text:     #8C8C8C
-Disabled text:      #BFBFBF
-Border:             #D9D9D9
-Divider:            #F0F0F0
-Success:            #52C41A
-Warning:            #FAAD14
-Error:              #FF4D4F
-```
+**特征：** 整体清晰，细节略模糊，文字大体可读
+**处理方式：**
+- 颜色：推断值，标注"可能有 ±10% 误差"
+- 间距：估算值，标注"估算"
+- 字号：估算值，按标准比例修正
 
 ---
 
-## Layout Pattern Detection
+### C 级 — 低质量（拍照、高度压缩、手绘草图）
 
-| Pattern name | Characteristics | Common use |
-|----------|------|----------|
-| Top bar + content | Horizontal navigation at top, full-width content | Portals, marketing pages, official sites |
-| Sidebar + content | Vertical navigation on the left | Admin dashboards, tools |
-| Sidebar + top bar + content | Dual navigation (side menu + top toolbar) | Complex admin systems |
-| Full-screen single column | No obvious navigation, full-screen content | Login page, onboarding, 404 |
-| Card grid | Content arranged in grid cards | Product listings, content aggregation, dashboards |
-| Master-detail layout | Left list + right detail | Email clients, CRM, file managers |
-| Full-screen form | Form is the main content | Registration, settings, fill-in flows |
+**特征：** 分辨率低、拍照噪点、手绘或白板照片
+**处理方式：**
+- 颜色：仅识别色调（暖/冷/中性），用下方色板替代
+- 布局：仅识别整体布局模式（顶栏+内容、侧栏+内容等）
+- 组件：仅识别组件类型，不提取具体样式
+- 标注："基于低质量设计的推断实现；建议用户确认"
 
 ---
 
-## Component Detection Ambiguity Handling
+### D 级 — 无设计稿（仅文字描述）
 
-Default inference rules when a component is difficult to identify:
-
-| Ambiguous case | Inferred as |
-|----------|--------|
-| Rectangular area, purpose unclear | Card |
-| Dark horizontal bar at the top | Header |
-| Dark vertical bar on the left | Sidebar |
-| Small rectangle with border | Input |
-| Small filled rectangle without border (with text inside) | Button |
-| Repeated rows with dividing lines | Table or List |
-| Rounded rectangle containing short text | Tag / Badge |
-| Semi-transparent overlay + centered content | Modal |
-| Progress-bar-like element | Progress or Steps |
+**特征：** 用户用文字描述想要的内容，无视觉参考
+**处理方式：**
+- 管理后台 → 使用 Ant Design 规范
+- 用户端 Web 应用 → 使用 Material Design 规范
+- 移动应用 → 使用平台原生规范（iOS/Android）
+- 标注："设计规范由 AI 生成，基于 <参考设计系统>"
 
 ---
 
-## Design Spec Standard Ratios
+## 颜色推断色板（适用于 B/C 级）
 
-Ensure extracted values conform to standard ratios; auto-correct when there is deviation:
+### 蓝色系（科技 / 商业 / SaaS）
+```
+主色：    #1677FF  (Ant Design Blue)
+深色：    #0958D9
+浅色：    #69B1FF
+背景：    #E6F4FF
+```
 
-**Font sizes (8pt system):**
+### 绿色系（金融 / 健康 / 自然）
+```
+主色：    #52C41A
+深色：    #389E0D
+浅色：    #95DE64
+背景：    #F6FFED
+```
+
+### 紫色系（创意 / 高端 / AI）
+```
+主色：    #722ED1
+深色：    #531DAB
+浅色：    #B37FEB
+背景：    #F9F0FF
+```
+
+### 橙色系（电商 / 活力 / 消费）
+```
+主色：    #FA8C16
+深色：    #D46B08
+浅色：    #FFD591
+背景：    #FFF7E6
+```
+
+### 中性色（通用，适用于所有类型）
+```
+白色背景：    #FFFFFF
+浅灰背景：    #F5F5F5 / #FAFAFA
+卡片背景：    #FFFFFF
+主文字：      #1C1C1E（深黑，现代感）
+次文字：      #8C8C8C
+禁用文字：    #BFBFBF
+边框：        #D9D9D9
+分割线：      #F0F0F0
+成功：        #52C41A
+警告：        #FAAD14
+错误：        #FF4D4F
+```
+
+---
+
+## 布局模式识别
+
+| 模式名称 | 特征 | 常见用途 |
+|---------|------|---------|
+| 顶栏 + 内容 | 顶部横向导航，全宽内容区 | 门户、营销页、官网 |
+| 侧栏 + 内容 | 左侧纵向导航 | 管理后台、工具类 |
+| 侧栏 + 顶栏 + 内容 | 双导航（侧边菜单 + 顶部工具栏） | 复杂管理系统 |
+| 全屏单列 | 无明显导航，全屏内容 | 登录页、引导页、404 |
+| 卡片网格 | 内容以网格卡片排列 | 产品列表、内容聚合、仪表盘 |
+| 主从布局 | 左侧列表 + 右侧详情 | 邮件客户端、CRM、文件管理器 |
+| 全屏表单 | 表单为主要内容 | 注册、设置、填写流程 |
+
+---
+
+## 组件识别歧义处理
+
+当组件难以识别时的默认推断规则：
+
+| 歧义情况 | 推断为 |
+|---------|--------|
+| 矩形区域，用途不明 | 卡片 |
+| 顶部深色横条 | Header |
+| 左侧深色竖条 | Sidebar |
+| 带边框的小矩形 | 输入框 |
+| 无边框的小填充矩形（内有文字） | 按钮 |
+| 带分割线的重复行 | 表格或列表 |
+| 圆角矩形内含短文字 | 标签 / 徽章 |
+| 半透明遮罩 + 居中内容 | 弹窗 |
+| 进度条状元素 | 进度条或步骤条 |
+
+---
+
+## 设计规范标准比例
+
+确保提取的值符合标准比例；有偏差时自动修正：
+
+**字号（8pt 系统）：**
 `12 / 14 / 16 / 20 / 24 / 32 / 40 / 48`
 
-**Spacing (4px base grid):**
+**间距（4px 基础网格）：**
 `4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64`
 
-**Corner radii (common values):**
-`0 / 2 / 4 / 6 / 8 / 12 / 16 / 9999 (circle)`
+**圆角（常用值）：**
+`0 / 2 / 4 / 6 / 8 / 12 / 16 / 9999（圆形）`
 
 ---
 
-## Extraction Result Self-check Checklist
+## 提取结果自查清单
 
-Verify after extraction is complete:
+提取完成后验证：
 
-- [ ] Every page has a corresponding component tree
-- [ ] Number of color tokens is reasonable (8–15, not too fragmented)
-- [ ] Spacing values conform to the 4px base grid
-- [ ] Font sizes conform to standard ratios
-- [ ] All inferred values are annotated as "inferred" or "estimated"
-- [ ] States which quality level was used for processing
+- [ ] 每个页面都有对应的组件树
+- [ ] 颜色令牌数量合理（8–15 个，不过度碎片化）
+- [ ] 间距值符合 4px 基础网格
+- [ ] 字号符合标准比例
+- [ ] 所有推断值均标注为"推断"或"估算"
+- [ ] 注明使用了哪个质量级别处理
 
 ---
 
-*This file is referenced by Claude Code when executing the `/process-design` Skill*
-*Updated: 2026-03-25*
+*本文件在 Claude Code 执行 `/process-design` 技能时被引用*
+*更新时间：2026-03-25*

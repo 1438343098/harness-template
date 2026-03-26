@@ -1,145 +1,145 @@
-# Skill: process-requirements — Requirements Parsing
+# 技能：process-requirements — 需求解析
 
-Parse a rough requirements document provided by the user into a structured features.json feature list.
+将用户提供的粗糙需求文档解析为结构化的 features.json 功能列表。
 
-## Prerequisites
+## 前提条件
 
-The user has provided requirements in one of the following locations:
-- Any file under the `docs/prd/` directory
-- Or text pasted directly into the conversation
+用户已在以下位置提供需求：
+- `docs/prd/` 目录下的任意文件
+- 或直接粘贴在对话中的文字
 
-## Step 0: Determine Whether This Is an Iteration
+## Step 0：判断是否为迭代需求
 
-Check first:
-- Whether `requirements_processed` in `features.json` is already `true`
-- Whether the document content contains keywords like "modify", "iteration", "v2", "adjustment"
-- Whether the document references existing features (FEAT-XXX)
+首先检查：
+- `features.json` 中 `requirements_processed` 是否已为 `true`
+- 文档内容是否包含"修改"、"迭代"、"v2"、"调整"等关键词
+- 文档是否引用了现有功能（FEAT-XXX）
 
-If this is an iteration → Stop and inform the user to use `/process-iteration` instead.
-If this is a first-time requirement → Continue with the steps below.
+若为迭代需求 → 停止并告知用户改用 `/process-iteration`。
+若为首次需求 → 继续以下步骤。
 
 ---
 
-## Step 1: Locate Requirements Document
+## Step 1：定位需求文档
 
 ```bash
 ls docs/prd/
 ```
 
-Read all non-template files (exclude AGENTS.md and REQUIREMENTS_TEMPLATE.md).
+读取所有非模板文件（排除 AGENTS.md 和 REQUIREMENTS_TEMPLATE.md）。
 
-If the user pasted content in the conversation, save it to `docs/prd/user-requirements.md` first, then process it.
+若用户在对话中粘贴了内容，先保存为 `docs/prd/user-requirements.md`，再处理。
 
-## Step 2: Structured Parsing
+## Step 2：结构化解析
 
-Read the entire requirements document and extract the following:
+读取完整需求文档，提取以下内容：
 
-**1. Product Goal**
-- What problem this application solves
-- Who the target users are
+**1. 产品目标**
+- 这个应用解决什么问题
+- 目标用户是谁
 
-**2. Core Feature Modules**
-- Main functional areas (e.g., user management, product management, order system)
+**2. 核心功能模块**
+- 主要功能领域（如用户管理、商品管理、订单系统）
 
-**3. Specific Feature Points**
-- Specific features within each module (e.g., user registration, user login, change password)
+**3. 具体功能点**
+- 每个模块内的具体功能（如用户注册、用户登录、修改密码）
 
-**4. Implicit Technical Requirements**
-- Things the user did not state but are necessary (e.g., authentication, data persistence, API interfaces)
+**4. 隐含技术需求**
+- 用户未明说但必须存在的（如鉴权、数据持久化、API 接口）
 
-**5. UI/Page Requirements**
-- Which pages are needed (e.g., login page, dashboard, list page, detail page)
+**5. UI/页面需求**
+- 需要哪些页面（如登录页、仪表盘、列表页、详情页）
 
-**6. Ambiguous or Unclear Requirements**
-- Parts that need clarification
+**6. 模糊或不清晰的需求**
+- 需要进一步澄清的部分
 
-**Processing Rules:**
-- "Features like xxx" → Extract the core characteristics of xxx
-- "etc. / and so on / similar" → Record as a feature, mark notes as "needs user clarification"
-- Repeated concepts → Merge into one feature
-- Contradictory requirements → Choose the simpler implementation, record the contradiction in notes
+**处理规则：**
+- "类似 xxx 的功能" → 提取 xxx 的核心特征
+- "等等/类似/之类的" → 登记为功能，在 notes 中标记"需用户澄清"
+- 重复概念 → 合并为一个功能
+- 矛盾需求 → 选择更简单的实现，在 notes 中记录冲突
 
-## Step 2.5: Identify and Register Sub-Projects
+## Step 2.5：识别并注册子项目
 
-Based on the requirements, identify which frontend apps and backend services need to be created:
+根据需求判断需要创建哪些前端应用和后端服务：
 
-**Identification Rules:**
-- "User-facing website" / "official site" / "storefront" → `apps/web`
-- "Admin panel" / "operations dashboard" / "CMS" → `apps/admin`
-- "Mobile" / "App" → `apps/mobile`
-- "API" / "interface service" / "backend" → `services/api`
-- "Scheduled tasks" / "async processing" / "queue" → `services/worker`
-- "Authentication" / "SSO" / "login service" → `services/auth`
+**识别规则：**
+- "用户端网站" / "官网" / "商城" → `apps/web`
+- "管理后台" / "运营平台" / "CMS" → `apps/admin`
+- "移动端" / "App" → `apps/mobile`
+- "API" / "接口服务" / "后端" → `services/api`
+- "定时任务" / "异步处理" / "队列" → `services/worker`
+- "鉴权" / "SSO" / "登录服务" → `services/auth`
 
-**Query user preferences (`user-preferences.json`):**
-- If `tech_stack.frontend` already has a default → Use it directly, do not ask
-- If `tech_stack.language.backend` already has a default → Use it directly
-- Options without a preference → Ask the user and record in `decision_log`
+**查询用户偏好（`user-preferences.json`）：**
+- 若 `tech_stack.frontend` 已有默认值 → 直接使用，不再询问
+- 若 `tech_stack.language.backend` 已有默认值 → 直接使用
+- 无偏好的选项 → 询问用户并记录到 `decision_log`
 
-**Write to the `projects` field in `features.json`:**
+**写入 `features.json` 的 `projects` 字段：**
 ```json
 {
   "projects": {
     "apps": [
       {
         "id": "APP-web",
-        "name": "User-facing Web",
+        "name": "用户端 Web",
         "path": "apps/web",
-        "tech_stack": "<learned preference or user-confirmed>",
-        "description": "<extracted from requirements>"
+        "tech_stack": "<已学习的偏好或用户确认的>",
+        "description": "<从需求中提取>"
       }
     ],
     "services": [
       {
         "id": "SVC-api",
-        "name": "Main API Service",
+        "name": "主 API 服务",
         "path": "services/api",
-        "language": "<language>",
-        "tech_stack": "<framework>",
-        "description": "<extracted from requirements>"
+        "language": "<语言>",
+        "tech_stack": "<框架>",
+        "description": "<从需求中提取>"
       }
     ]
   }
 }
 ```
 
-**Create directory and AGENTS.md for each sub-project:**
+**为每个子项目创建目录和 AGENTS.md：**
 ```bash
 mkdir -p apps/<name>
 mkdir -p services/<name>
 ```
 
-AGENTS.md should document: tech stack, directory structure conventions, code standards, startup commands.
+AGENTS.md 应记录：技术栈、目录结构规范、代码规范、启动命令。
 
 ---
 
-## Step 3: Feature Priority Ordering
+## Step 3：功能优先级排序
 
-Priority rules (1 = highest):
-1. **Infrastructure** — Without it, other features cannot run (database, authentication system)
-2. **Core User Flows** — The user's primary operation paths
-3. **Supporting Features** — Enhance the experience but not required
-4. **Optimization Features** — Performance tuning, UI polish, etc.
+优先级规则（1 = 最高）：
+1. **基础设施** — 没有它其他功能无法运行（数据库、鉴权系统）
+2. **核心用户流程** — 用户的主要操作路径
+3. **辅助功能** — 提升体验但非必须
+4. **优化功能** — 性能调优、UI 打磨等
 
-## Step 4: Generate features.json
+## Step 4：生成 features.json
 
-Write the extracted features into `features.json` in the following format:
+按以下格式将提取的功能写入 `features.json`：
 
 ```json
 {
   "project": {
-    "name": "<project name extracted from requirements>",
-    "description": "<one-sentence description>",
-    "target_user": "<target user>",
+    "name": "<从需求中提取的项目名>",
+    "description": "<一句话描述>",
+    "target_user": "<目标用户>",
     "tech_stack": {
-      "frontend": "<tech stack, write TBD if unspecified>",
-      "backend": "<tech stack, write TBD if unspecified>",
-      "database": "<database, write TBD if unspecified>"
+      "frontend": "<技术栈，未指定写 TBD>",
+      "backend": "<技术栈，未指定写 TBD>",
+      "database": "<数据库，未指定写 TBD>"
     }
   },
   "summary": {
-    "total": <total feature count>,
-    "pending": <pending count>,
+    "total": <功能总数>,
+    "pending": <待处理数>,
     "in_progress": 0,
     "done": 0,
     "last_updated": "<ISO 8601>"
@@ -147,22 +147,22 @@ Write the extracted features into `features.json` in the following format:
   "features": [
     {
       "id": "FEAT-001",
-      "title": "<feature title>",
-      "module": "<module it belongs to>",
+      "title": "<功能标题>",
+      "module": "<所属模块>",
       "app": "APP-web | SVC-api | SVC-worker | ...",
       "type": "backend|frontend|fullstack|infra",
       "priority": 1,
       "status": "pending",
       "version": "v1",
       "version_history": [],
-      "description": "<detailed feature description>",
+      "description": "<详细功能描述>",
       "acceptance_criteria": [
-        "<acceptance criteria 1>",
-        "<acceptance criteria 2>"
+        "<验收标准 1>",
+        "<验收标准 2>"
       ],
       "dependencies": [],
       "estimated_hours": 2,
-      "notes": "<notes, especially for ambiguous points>",
+      "notes": "<备注，尤其是模糊点>",
       "created_at": "<ISO 8601>",
       "started_at": null,
       "completed_at": null
@@ -170,10 +170,10 @@ Write the extracted features into `features.json` in the following format:
   ],
   "ambiguities": [
     {
-      "description": "<ambiguous requirements description>",
-      "question": "<question to confirm with user>",
-      "impact": "<impact if not clarified>",
-      "default_assumption": "<default handling approach>"
+      "description": "<模糊需求描述>",
+      "question": "<需向用户确认的问题>",
+      "impact": "<不澄清的影响>",
+      "default_assumption": "<默认处理方式>"
     }
   ],
   "design_assets": {
@@ -186,38 +186,38 @@ Write the extracted features into `features.json` in the following format:
 }
 ```
 
-**Note:** `estimated_hours` for each feature must not exceed 4 hours. If it does, split the feature.
+**注意：** 每个功能的 `estimated_hours` 不得超过 4 小时。如超过，拆分该功能。
 
-## Step 5: Output Parsing Report
+## Step 5：输出解析报告
 
 ```
-=== Requirements Parsing Complete ===
+=== 需求解析完成 ===
 
-[Project Overview]
-<A paragraph describing the understood project>
+【项目概述】
+<用一段话描述理解的项目>
 
-[Feature List] (N features total)
-Priority 1 - Infrastructure:
-  ✅ FEAT-001: <title> (estimated Xh)
+【功能列表】（共 N 个功能）
+优先级 1 - 基础设施：
+  ✅ FEAT-001：<标题>（预计 Xh）
   ...
 
-Priority 2 - Core Features:
-  ✅ FEAT-003: <title> (estimated Xh)
+优先级 2 - 核心功能：
+  ✅ FEAT-003：<标题>（预计 Xh）
   ...
 
-[Technology Stack]
-Frontend: <TBD or confirmed>
-Backend: <TBD or confirmed>
-Database: <TBD or confirmed>
+【技术栈】
+前端：<TBD 或已确认>
+后端：<TBD 或已确认>
+数据库：<TBD 或已确认>
 
-[Questions Needing Clarification]
-1. <question 1>
-   - Impact: <scope of impact>
-   - Default handling: <if not answered, then...>
-2. <question 2>
+【需要澄清的问题】
+1. <问题 1>
+   - 影响范围：<影响范围>
+   - 默认处理：<若不回答，则...>
+2. <问题 2>
    ...
 
-Please confirm whether the above understanding is correct. Let us know if anything needs to be changed.
-After confirmation, run /process-design (if design mockups exist) or /implement-feature FEAT-001 to start development.
+请确认以上理解是否正确。如需调整请告知。
+确认后，运行 /process-design（若有设计稿）或 /implement-feature FEAT-001 开始开发。
 ====================
 ```

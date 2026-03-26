@@ -1,44 +1,44 @@
-# docs/prd/ Directory Navigation — AGENTS.md
+# docs/prd/ 目录导航 — AGENTS.md
 
-> This directory holds product requirements documents. Any format is supported; Claude Code will organize them automatically.
+> 本目录存放产品需求文档。支持任意格式；Claude Code 会自动整理。
 
 ---
 
-## Directory Contents
+## 目录内容
 
-| File | Description |
+| 文件 | 说明 |
 |------|------|
-| `REQUIREMENTS_TEMPLATE.md` | Recommended format template (not required) |
-| `user-requirements.md` | Actual user requirements (any name is fine) |
+| `REQUIREMENTS_TEMPLATE.md` | 推荐的格式模板（非必须） |
+| `user-requirements.md` | 实际用户需求（任意名称均可） |
 
 ---
 
-## User Instructions
+## 用户说明
 
-**Method 1: Use the template (recommended)**
-Copy `REQUIREMENTS_TEMPLATE.md` and fill it in according to the template.
+**方法 1：使用模板（推荐）**
+复制 `REQUIREMENTS_TEMPLATE.md`，按模板填写。
 
-**Method 2: Drop files directly**
-Place requirements documents directly into this directory. They can be:
-- Product requirements documents (PRDs)
-- Feature lists, user stories
-- Casual idea notes
-- Informal descriptions in any language
+**方法 2：直接丢文件**
+将需求文档直接放入本目录，可以是：
+- 产品需求文档（PRD）
+- 功能列表、用户故事
+- 随意的想法记录
+- 任意语言的口语描述
 
-**It doesn't matter how messy the format is — Claude Code will handle it.**
+**格式再乱也没关系 — Claude Code 会处理。**
 
-**Method 3: Paste in conversation**
-Paste requirements directly into the Claude Code conversation and run `/process-requirements`.
-
----
-
-## Claude Workflow
-
-1. Read all non-template files in this directory
-2. Run the `/process-requirements` Skill to parse them
-3. Write results to `features.json`
-4. Output a parsing report and wait for user confirmation
+**方法 3：在对话中粘贴**
+直接在 Claude Code 对话中粘贴需求，然后运行 `/process-requirements`。
 
 ---
 
-*Updated: 2026-03-25*
+## Claude 工作流
+
+1. 读取本目录下所有非模板文件
+2. 运行 `/process-requirements` 技能解析
+3. 将结果写入 `features.json`
+4. 输出解析报告并等待用户确认
+
+---
+
+*更新时间：2026-03-25*

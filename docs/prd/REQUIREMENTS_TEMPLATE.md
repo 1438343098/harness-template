@@ -1,27 +1,27 @@
-# Product Requirements Document Template
+# 产品需求文档模板
 
-> **Usage note:** The format below is recommended but not required. Fill it in however you like — Claude Code will organize it automatically.
-
----
-
-## Project Overview
-
-**Project name:** (What is your project called?)
-
-**One-line description:** (Describe in one sentence what this application does)
-
-**Target users:** (Who will use this product?)
-
-**Technology preferences:** (What tech stack do you want to use? Leave blank if unsure)
-- Frontend: React / Vue / Next.js / Other / Not sure
-- Backend: Node.js / Python / Java / Other / Not sure
-- Database: MySQL / PostgreSQL / MongoDB / Other / Not sure
+> **使用说明：** 以下格式为推荐但非必须。随意填写即可 — Claude Code 会自动整理。
 
 ---
 
-## Core Feature Requirements
+## 项目概述
 
-> Listed by importance. 1-2 sentences per feature. No technical details needed.
+**项目名称：**（你的项目叫什么？）
+
+**一句话描述：**（用一句话说明这个应用做什么）
+
+**目标用户：**（谁会使用这个产品？）
+
+**技术偏好：**（想用什么技术栈？不确定可留空）
+- 前端：React / Vue / Next.js / 其他 / 不确定
+- 后端：Node.js / Python / Java / 其他 / 不确定
+- 数据库：MySQL / PostgreSQL / MongoDB / 其他 / 不确定
+
+---
+
+## 核心功能需求
+
+> 按重要程度排列。每个功能 1–2 句话。不需要技术细节。
 
 1.
 
@@ -29,24 +29,24 @@
 
 3.
 
-(Continue adding...)
+（继续添加...）
 
 ---
 
-## Main User Flow
+## 主要用户流程
 
-> Describe the main steps of how a user will use this product.
+> 描述用户使用这个产品的主要步骤。
 
-1. User opens the app
+1. 用户打开应用
 2.
 3.
-4. Ultimately achieves...
+4. 最终达到...
 
 ---
 
-## UI / Page Requirements
+## UI / 页面需求
 
-> What pages are needed? A simple description is fine.
+> 需要哪些页面？简单描述即可。
 
 -
 -
@@ -54,36 +54,36 @@
 
 ---
 
-## Special Requirements
+## 特殊要求
 
-> Any particularly important requirements? (performance, security, third-party integrations, etc.)
-
--
-
----
-
-## Out of Scope
-
-> What is explicitly not needed, to avoid over-building.
+> 有什么特别重要的要求吗？（性能、安全、第三方集成等）
 
 -
 
 ---
 
-## Reference Products
+## 不做的事
 
-> Are there any similar products to reference? (optional)
+> 明确说明不需要什么，避免过度开发。
 
-- Like the xxx feature of xxx
-
----
-
-## Additional Notes
-
-> Anything else you want to say — write freely.
-
-
+-
 
 ---
 
-*After submitting, run: `/process-requirements` to begin parsing*
+## 参考产品
+
+> 有没有类似产品可以参考？（可选）
+
+- 类似 xxx 的 xxx 功能
+
+---
+
+## 其他备注
+
+> 还有什么想说的 — 随意写。
+
+
+
+---
+
+*提交后运行：`/process-requirements` 开始解析*

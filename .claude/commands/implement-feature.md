@@ -1,180 +1,180 @@
-# Skill: implement-feature — Feature Implementation
+# 技能：implement-feature — 功能实现
 
-Implement a single feature specified in features.json.
+实现 features.json 中指定的单个功能。
 
-**Usage:** `/implement-feature FEAT-001`
+**用法：** `/implement-feature FEAT-001`
 
-## Step 0: Query User Preferences
+## Step 0：查询用户偏好
 
 ```bash
 cat user-preferences.json
 ```
 
-Extract all preferences with `confirmed: true`. When making technology choices during implementation, use these as defaults without asking the user again.
+提取所有 `confirmed: true` 的偏好。实现过程中的技术选型直接使用这些默认值，无需再次询问用户。
 
 ---
 
-## Step 1: Read Feature Information
+## Step 1：读取功能信息
 
 ```bash
 cat features.json
 ```
 
-Extract the target feature's: `title`, `description`, `type`, `app` (owning project), `acceptance_criteria`, `dependencies`, `notes`
+提取目标功能的：`title`、`description`、`type`、`app`（所属项目）、`acceptance_criteria`、`dependencies`、`notes`
 
-Using the `app` field, find the corresponding project's `path` and `tech_stack` in `features.json`'s `projects` section, and place code in that project directory.
+通过 `app` 字段，在 `features.json` 的 `projects` 中找到对应项目的 `path` 和 `tech_stack`，将代码放在该项目目录下。
 
-## Step 2: Check Dependencies
+## Step 2：检查依赖
 
-Check the status of each feature ID in the `dependencies` list.
+检查 `dependencies` 列表中每个功能 ID 的状态。
 
-If any dependency is not complete (not `done`), stop and report:
+若有依赖未完成（未达到 `done`），停止并汇报：
 ```
-[BLOCKED] Feature <ID> depends on <dependency ID> (<dependency title>) which is not yet complete
-Suggestion: implement first with /implement-feature <dependency ID>
+[BLOCKED] 功能 <ID> 依赖 <依赖 ID>（<依赖标题>），该依赖尚未完成
+建议：先通过 /implement-feature <依赖 ID> 实现
 ```
 
-## Step 3: Read Design Spec
+## Step 3：读取设计规范
 
 ```bash
 cat docs/design/extracted/design-spec.md
 ```
 
-Locate the page/component design spec corresponding to this feature.
+找到本功能对应的页面/组件设计规范。
 
-## Step 4: Set Feature Status to in_progress
+## Step 4：将功能状态改为 in_progress
 
-Update the feature's `status` to `in_progress` in `features.json`, and fill in `started_at`.
+在 `features.json` 中将该功能的 `status` 改为 `in_progress`，并填写 `started_at`。
 
-Append to `claude-progress.txt`:
+在 `claude-progress.txt` 中追加：
 ```
-[FEAT-XXX] START: <feature title> — <time>
+[FEAT-XXX] START: <功能标题> — <时间>
 ```
 
-## Step 5: Output Implementation Plan (Wait for User Confirmation)
+## Step 5：输出实现计划（等待用户确认）
 
 ```
-=== Implementation Plan: FEAT-XXX <feature title> ===
+=== 实现计划：FEAT-XXX <功能标题> ===
 
-Type: <frontend / backend / fullstack / infra>
-Estimated steps:
-1. <step 1>
-2. <step 2>
+类型：<frontend / backend / fullstack / infra>
+预计步骤：
+1. <步骤 1>
+2. <步骤 2>
 ...
 
-Files to be created/modified:
-- <file path> — <purpose>
+待创建/修改的文件：
+- <文件路径> — <用途>
 - ...
 
-Acceptance criteria:
-- <criteria 1>
-- <criteria 2>
+验收标准：
+- <标准 1>
+- <标准 2>
 ```
 
-If the user says "continue", "OK", or does not object, begin implementation immediately.
+若用户回复"继续"、"OK"或没有反对意见，立即开始实现。
 
-## Step 6: Implement Code
+## Step 6：实现代码
 
-### File Header Comment (required)
+### 文件头部注释（必须）
 
 ```javascript
 /**
- * @feature FEAT-XXX: <feature title>
- * @module <module name>
- * @created <date>
- * @description <brief description>
+ * @feature FEAT-XXX: <功能标题>
+ * @module <模块名>
+ * @created <日期>
+ * @description <简要描述>
  */
 ```
 
-### Implementation Order
+### 实现顺序
 
-**Backend (type: backend)**:
-1. Data model / Schema definition
-2. Database migrations (if needed)
-3. Service layer
-4. API routes/controllers
-5. Input validation
-6. Error handling
+**后端（type: backend）：**
+1. 数据模型 / Schema 定义
+2. 数据库迁移（如需要）
+3. Service 层
+4. API 路由/控制器
+5. 输入校验
+6. 错误处理
 
-**Frontend (type: frontend)**:
-1. Read the corresponding page/component spec in `docs/design/extracted/design-spec.md`
-2. Create CSS variables file (referencing design tokens)
-3. Base UI components (stateless)
-4. Page components (stateful, connected to data)
-5. Route configuration
-6. API integration
+**前端（type: frontend）：**
+1. 读取 `docs/design/extracted/design-spec.md` 中对应的页面/组件规范
+2. 创建 CSS 变量文件（引用设计令牌）
+3. 基础 UI 组件（无状态）
+4. 页面组件（有状态，连接数据）
+5. 路由配置
+6. API 集成
 
-**Full-stack (type: fullstack)**: Backend first, then frontend.
+**全栈（type: fullstack）：** 先实现后端，再实现前端。
 
-**Infrastructure (type: infra)**:
-1. Configuration files
-2. Middleware/plugins
-3. Environment variable template updates
+**基础设施（type: infra）：**
+1. 配置文件
+2. 中间件/插件
+3. 更新环境变量模板
 
-### After creating each file, append a progress log entry
+### 每创建一个文件后，追加进度日志
 
 ```
-[FEAT-XXX] FILE: <file path> — <file purpose>
+[FEAT-XXX] FILE: <文件路径> — <文件用途>
 ```
 
-## Step 7: Run Validation
+## Step 7：运行校验
 
 ```bash
-# Frontend
+# 前端
 npm run build 2>&1 | tail -20
 
-# Backend (Node.js)
+# 后端（Node.js）
 node -e "require('./src/app')" 2>&1
 
-# Backend (Python)
-python -m py_compile <file path> 2>&1
+# 后端（Python）
+python -m py_compile <文件路径> 2>&1
 ```
 
-If validation fails, it must be fixed before proceeding.
+校验失败必须修复，不可跳过。
 
-## Step 8: Update Feature Status to done
+## Step 8：将功能状态更新为 done
 
-Update `features.json`:
-- `status`: `done`
-- `completed_at`: current time
+更新 `features.json`：
+- `status`：`done`
+- `completed_at`：当前时间
 
-Append to `claude-progress.txt`:
+在 `claude-progress.txt` 中追加：
 ```
-[FEAT-XXX] DONE: <feature title> — <time>
-  Acceptance:
-  ✅ <acceptance criteria 1>
-  ✅ <acceptance criteria 2>
-  Files:
-  - <file path>
-```
-
-## Step 9: Output Completion Report
-
-```
-=== Feature Complete: FEAT-XXX <feature title> ===
-
-✅ All acceptance criteria passed
-
-[Files Created]
-- <path>: <purpose>
-
-[Files Modified]
-- <path>: <what changed>
-
-[Notes]
-<things to be aware of when using this feature>
-
-[Recommended Next Steps]
-Next pending feature: FEAT-XXX <title> (priority: X)
-Run: /implement-feature FEAT-XXX
+[FEAT-XXX] DONE: <功能标题> — <时间>
+  验收：
+  ✅ <验收标准 1>
+  ✅ <验收标准 2>
+  文件：
+  - <文件路径>
 ```
 
-## Common Situations
+## Step 9：输出完成报告
 
-| Situation | Handling |
-|------|------|
-| Dependency not complete | Stop, prompt to implement dependency first |
-| Design spec missing | Use Ant Design / Material Design standards as placeholder, note it |
-| Tech stack undecided | Ask user, record in features.json notes |
-| Build failure | Must fix; skipping is not allowed |
-| Ambiguous requirements | Complete using default assumptions in notes, then explain after |
+```
+=== 功能完成：FEAT-XXX <功能标题> ===
+
+✅ 所有验收标准通过
+
+【已创建文件】
+- <路径>：<用途>
+
+【已修改文件】
+- <路径>：<改了什么>
+
+【注意事项】
+<使用此功能时需注意的事项>
+
+【推荐下一步】
+下一个 pending 功能：FEAT-XXX <标题>（优先级：X）
+运行：/implement-feature FEAT-XXX
+```
+
+## 常见情况
+
+| 情况 | 处理方式 |
+|------|---------|
+| 依赖未完成 | 停止，提示先实现依赖 |
+| 设计规范缺失 | 使用 Ant Design / Material Design 标准作为占位，并注明 |
+| 技术栈未定 | 询问用户，记录在 features.json 的 notes 中 |
+| 构建失败 | 必须修复；不允许跳过 |
+| 需求模糊 | 按默认假设完成，在 notes 中说明，之后解释 |

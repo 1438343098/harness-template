@@ -1,17 +1,17 @@
-# Skill: delegate-subagent — Parallel Feature Dispatch
+# 技能：delegate-subagent — 并行功能分发
 
-Assign multiple independent features to parallel sub-agents for simultaneous implementation, reducing total development time.
+将多个独立功能分发给并行子 Agent 同时实现，缩短总开发时间。
 
-**Trigger:** `/delegate-subagent [optional count, default 3]`
+**触发方式：** `/delegate-subagent [可选数量，默认 3]`
 
-**Applicable conditions:**
-- features.json contains 2 or more mutually independent (no unfinished dependencies) pending features
-- These features belong to different apps/services (natural file-level isolation)
-- The user wants to accelerate development pace
+**适用条件：**
+- features.json 中有 2 个以上互相独立（无未完成依赖）的 pending 功能
+- 这些功能分属不同的 app/service（天然的文件级隔离）
+- 用户希望加快开发进度
 
 ---
 
-## Step 1: Read Current State
+## Step 1：读取当前状态
 
 ```bash
 cat features.json
@@ -19,236 +19,235 @@ cat agents.json
 cat user-preferences.json
 ```
 
-Extract:
-- All features with `status: pending`
-- Feature IDs already `running` in agents.json (exclude these)
-- User preferences already confirmed (use directly in sub-agent prompts)
+提取：
+- 所有 `status: pending` 的功能
+- agents.json 中已处于 `running` 状态的功能 ID（排除这些）
+- 已确认的用户偏好（直接写入子 Agent 的 prompt）
 
 ---
 
-## Step 2: Filter Parallelizable Candidate Features
+## Step 2：筛选可并行的候选功能
 
-**Filter criteria (all must be satisfied):**
+**筛选条件（须全部满足）：**
 
 1. `status: pending`
-2. All features in `dependencies` have `status: done`
-3. Not in the `running` list of agents.json
-4. **At most 1 feature per `app`** (features within the same app often have implicit file dependencies)
+2. `dependencies` 中所有功能的 `status` 均为 `done`
+3. 不在 agents.json 的 `running` 列表中
+4. **每个 `app` 最多选 1 个功能**（同一 app 内的功能通常存在隐式文件依赖）
 
-**Ordering:** Sort by `priority` ascending (lower number = higher priority)
+**排序：** 按 `priority` 升序排列（数字越小优先级越高）
 
-**Count:** Take the first N, where N = min(parameter, `agents.json.max_parallel`, candidate count)
+**数量：** 取前 N 个，N = min(参数值, `agents.json.max_parallel`, 候选数量)
 
-If fewer than 2 candidate features exist, stop and display:
+若候选功能不足 2 个，停止并显示：
 ```
-Insufficient candidate features for parallel dispatch.
-Currently parallelizable independent pending features: <N>
-Suggestion: use /implement-feature <FEAT-ID> directly
+候选功能不足，无法进行并行分发。
+当前可并行的独立 pending 功能：<N> 个
+建议：直接使用 /implement-feature <FEAT-ID>
 ```
 
 ---
 
-## Step 3: Register to agents.json
+## Step 3：注册到 agents.json
 
-Write the following into the `agents` array in `agents.json` for each candidate feature:
+为每个候选功能在 `agents.json` 的 `agents` 数组中写入：
 
 ```json
 {
   "id": "agent-<YYYYMMDD>-<index>",
   "feature_id": "<FEAT-ID>",
-  "app": "<app field value>",
-  "title": "<feature title>",
+  "app": "<app 字段值>",
+  "title": "<功能标题>",
   "status": "running",
-  "started_at": "<current ISO 8601>",
+  "started_at": "<当前 ISO 8601>",
   "completed_at": null,
   "error": null
 }
 ```
 
-Also update `active_session` to the current timestamp and `last_updated` to the current time.
+同时将 `active_session` 更新为当前时间戳，`last_updated` 更新为当前时间。
 
 ---
 
-## Step 4: Look Up Project Info for Each Feature
+## Step 4：查找每个功能的项目信息
 
-From `features.json`'s `projects.apps` and `projects.services`,
-use the feature's `app` field to find the corresponding project's:
-- `path` (directory where code will be written)
-- `tech_stack` (technology stack)
-- `language` (programming language, for services type)
+从 `features.json` 的 `projects.apps` 和 `projects.services` 中，通过功能的 `app` 字段找到对应项目的：
+- `path`（代码将写入的目录）
+- `tech_stack`（技术栈）
+- `language`（编程语言，services 类型适用）
 
 ---
 
-## Step 5: Construct an Independent Prompt for Each Sub-Agent
+## Step 5：为每个子 Agent 构建独立 Prompt
 
-Each sub-agent's prompt must be fully self-contained (sub-agents have no current session context).
+每个子 Agent 的 Prompt 必须完全自包含（子 Agent 没有当前会话的上下文）。
 
-**Prompt template:**
+**Prompt 模板：**
 
 ```
-You are a sub-agent focused on implementing a single feature. After implementation is complete, return the results to the Orchestrator in structured format. Do not modify any state files.
+你是一个专注于实现单个功能的子 Agent。实现完成后，请以结构化格式将结果返回给 Orchestrator。不得修改任何状态文件。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Your Task
+你的任务
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Implement feature: <FEAT-ID> — <title>
-Project: <app>  Path: <path>
-Tech stack: <tech_stack>
-Language: <language (if applicable)>
+实现功能：<FEAT-ID> — <标题>
+项目：<app>  路径：<path>
+技术栈：<tech_stack>
+语言：<language（如适用）>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Feature Details
+功能详情
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Description: <description>
+描述：<description>
 
-Acceptance criteria:
-<list acceptance_criteria line by line>
+验收标准：
+<逐行列出 acceptance_criteria>
 
-Notes: <notes>
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Resource Locations
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Design spec: docs/design/extracted/design-spec.md (read if file exists)
-Requirements document: docs/prd/ (if background context is needed)
+备注：<notes>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Confirmed User Preferences (use directly, do not ask)
+资源位置
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-<list each preference with confirmed: true from user-preferences.json>
+设计规范：docs/design/extracted/design-spec.md（文件存在时读取）
+需求文档：docs/prd/（需要背景上下文时）
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Code Standards
+已确认的用户偏好（直接使用，无需询问）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Every file must start with a comment: @feature <FEAT-ID>, @created <date>
-- Functions must not exceed 50 lines
-- No hardcoded secrets or passwords
-- Errors must be handled; silent fails are not allowed
-- <e.g. TypeScript: no any types>
-- <e.g. Python: use snake_case>
+<列出 user-preferences.json 中所有 confirmed: true 的偏好>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-File Isolation Constraint (strictly enforced)
+代码规范
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-You may only create/modify files under the <path>/ directory.
-Writing to any other project directory is strictly forbidden.
+- 每个文件必须以注释开头：@feature <FEAT-ID>，@created <日期>
+- 函数不得超过 50 行
+- 不得硬编码密钥或密码
+- 错误必须处理；不允许静默失败
+- <例如 TypeScript：禁用 any 类型>
+- <例如 Python：使用 snake_case>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Prohibited Actions
+文件隔离约束（严格执行）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Do not modify features.json
-- Do not modify agents.json
-- Do not modify claude-progress.txt
-- Do not modify user-preferences.json
-- Do not modify files belonging to other features' directories
+只可在 <path>/ 目录下创建/修改文件。
+严禁向其他项目目录写入任何内容。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Upon completion, return results in the following format (nothing else)
+禁止操作
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- 不得修改 features.json
+- 不得修改 agents.json
+- 不得修改 claude-progress.txt
+- 不得修改 user-preferences.json
+- 不得修改属于其他功能目录的文件
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+完成后按以下格式返回结果（仅此格式，不输出其他内容）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RESULT:
 feature_id: <FEAT-ID>
 success: true | false
 files_created:
-  - <file path> — <purpose>
+  - <文件路径> — <用途>
 files_modified:
-  - <file path> — <what was changed>
+  - <文件路径> — <改了什么>
 acceptance_verified:
-  - [✅/❌] <acceptance criteria 1>
-  - [✅/❌] <acceptance criteria 2>
-issues: <issues encountered, or "none" if none>
-notes: <notes for the Orchestrator, or "none" if none>
+  - [✅/❌] <验收标准 1>
+  - [✅/❌] <验收标准 2>
+issues: <遇到的问题，若无则写 "none">
+notes: <给 Orchestrator 的备注，若无则写 "none">
 ```
 
 ---
 
-## Step 6: Dispatch Sub-Agents in Parallel
+## Step 6：并行分发子 Agent
 
-**Launch all sub-agent calls simultaneously in a single message (do not wait for one to finish before starting the next).**
+**在单条消息中同时启动所有子 Agent 调用（不等一个完成再启动下一个）。**
 
-Use Claude Code's Agent tool to call each candidate feature separately so they execute in parallel.
+使用 Claude Code 的 Agent 工具分别调用每个候选功能，使其并行执行。
 
-Wait for all sub-agents to return before proceeding to Step 7.
-
----
-
-## Step 7: Collect Results and Write State Back
-
-Iterate through each sub-agent's returned result:
-
-**Success (success: true):**
-- Update the corresponding feature in `features.json`: `status → done`, fill in `completed_at`
-- Update the corresponding entry in `agents.json`: `status → done`, fill in `completed_at`
-
-**Failure (success: false):**
-- Update the corresponding feature in `features.json`: `status → pending` (rollback), append error reason to `notes`
-- Update the corresponding entry in `agents.json`: `status → failed`, fill in `error`
-
-Update the `summary` counts in `features.json`.
+等所有子 Agent 返回后再进行 Step 7。
 
 ---
 
-## Step 8: Append Progress Log
+## Step 7：汇总结果并回写状态
 
-Append to the end of `claude-progress.txt`:
+遍历每个子 Agent 返回的结果：
+
+**成功（success: true）：**
+- 更新 `features.json` 中对应功能：`status → done`，填写 `completed_at`
+- 更新 `agents.json` 中对应条目：`status → done`，填写 `completed_at`
+
+**失败（success: false）：**
+- 更新 `features.json` 中对应功能：`status → pending`（回滚），在 `notes` 中追加错误原因
+- 更新 `agents.json` 中对应条目：`status → failed`，填写 `error`
+
+更新 `features.json` 中 `summary` 的计数。
+
+---
+
+## Step 8：追加进度日志
+
+在 `claude-progress.txt` 末尾追加：
 
 ```
 ================================================================================
 PARALLEL BATCH
-Time: <ISO 8601>
-Parallel count: <N>
+时间：<ISO 8601>
+并行数量：<N>
 ================================================================================
 
-[Batch Results]
-<list results for each feature>
+【批次结果】
+<列出每个功能的结果>
 
-[Summary of Created Files]
-<merged list of all files created/modified by sub-agents>
+【创建文件汇总】
+<所有子 Agent 创建/修改文件的合并列表>
 
-[Failed Features]
-<if any failures, list reasons; otherwise write "none">
+【失败功能】
+<若有失败，列出原因；否则写"无">
 
 ================================================================================
 ```
 
 ---
 
-## Step 9: Output Parallel Execution Report
+## Step 9：输出并行执行报告
 
 ```
-=== Parallel Execution Complete ===
+=== 并行执行完成 ===
 
-[Batch Results] (total: N)
-✅ FEAT-003: <title> — completed (3 files)
-✅ FEAT-005: <title> — completed (5 files)
-❌ FEAT-007: <title> — failed (reason: <reason>, rolled back to pending)
+【批次结果】（共 N 个）
+✅ FEAT-003：<标题> — 已完成（3 个文件）
+✅ FEAT-005：<标题> — 已完成（5 个文件）
+❌ FEAT-007：<标题> — 失败（原因：<原因>，已回滚为 pending）
 
-[Next Steps]
-Remaining pending features: <N>
-Suggestion: /delegate-subagent (continue parallel) or /implement-feature FEAT-XXX (single implementation)
+【下一步】
+剩余 pending 功能：<N> 个
+建议：/delegate-subagent（继续并行）或 /implement-feature FEAT-XXX（单个实现）
 ====================
 ```
 
 ---
 
-## Parallel Constraint Reference
+## 并行约束参考
 
-| Can parallelize | Not recommended to parallelize |
-|----------|-----------|
-| Features in different apps (apps/web vs services/api) | Multiple features in the same app |
-| Features with no dependencies on each other | Features with dependency relationships (implement the dependency first) |
-| Pure frontend + pure backend features | Features that both involve shared types/interfaces definitions |
-| Independent pages + independent APIs | Features that both require modifying the same config file |
+| 可以并行 | 不建议并行 |
+|---------|-----------|
+| 属于不同 app 的功能（apps/web vs services/api） | 同一 app 内的多个功能 |
+| 互相无依赖的功能 | 有依赖关系的功能（先实现依赖） |
+| 纯前端 + 纯后端功能 | 都涉及共享类型/接口定义的功能 |
+| 独立页面 + 独立 API | 都需要修改同一配置文件的功能 |
 
 ---
 
-## Emergency Abort
+## 紧急中止
 
-If the user interrupts during parallel execution (Ctrl+C or closes the terminal):
+若用户在并行执行期间中断（Ctrl+C 或关闭终端）：
 
-The next `/session-start` will detect `running` entries in agents.json and automatically prompt:
+下次 `/session-start` 将检测到 agents.json 中的 `running` 条目，自动提示：
 ```
-⚠️ Detected unfinished parallel tasks from last session:
-  - FEAT-003 (running since <time>)
-  - FEAT-005 (running since <time>)
-Suggestion: Check whether these features have partial implementations in their code files, then decide whether to re-implement or complete manually.
+⚠️ 检测到上次会话遗留的未完成并行任务：
+  - FEAT-003（运行自 <时间>）
+  - FEAT-005（运行自 <时间>）
+建议：检查这些功能在代码文件中是否有部分实现，再决定是重新实现还是手动补全。
 ```

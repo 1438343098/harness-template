@@ -1,103 +1,103 @@
-# Skill: session-end — Session Wrap-Up
+# 技能：session-end — 会话收尾
 
-Execute the following steps to safely end the current session and save state.
+执行以下步骤，安全结束当前会话并保存状态。
 
-## Step 1: Collect Session Completion Summary
+## Step 1：汇总本次会话完成情况
 
-Compile the completion checklist for this session:
-- Which features were completed (feature ID + title)
-- Which files were created/modified
-- What problems or decisions were encountered
-- What was left unfinished
+整理本次会话的完成清单：
+- 完成了哪些功能（功能 ID + 标题）
+- 创建/修改了哪些文件
+- 遇到了什么问题或决策
+- 哪些内容未完成
 
-## Step 2: Update features.json
+## Step 2：更新 features.json
 
-**Features completed this session:**
+**本次会话已完成的功能：**
 ```json
 {
   "status": "done",
-  "completed_at": "<current ISO 8601 time>",
-  "notes": "<completion notes, explain any deviations>"
+  "completed_at": "<当前 ISO 8601 时间>",
+  "notes": "<完成备注，说明与预期的偏差>"
 }
 ```
 
-**Features started but not completed this session:**
+**本次会话已开始但未完成的功能：**
 ```json
 {
   "status": "in_progress",
-  "notes": "<description of current progress, entry point for next session>"
+  "notes": "<当前进度说明，下次会话的入口点>"
 }
 ```
 
-Sync the counts in the `summary` field accordingly.
+同步更新 `summary` 字段中的计数。
 
-## Step 3: Append to Progress Log
+## Step 3：追加进度日志
 
-Append the following to the end of `claude-progress.txt` (**do not modify existing content**):
+在 `claude-progress.txt` 末尾追加以下内容（**不得修改已有内容**）：
 
 ```
 ================================================================================
 SESSION END
-Date: <YYYY-MM-DD>
-Time: <HH:MM>
+日期：<YYYY-MM-DD>
+时间：<HH:MM>
 ================================================================================
 
-[Completed This Session]
-<List each completed feature>
+【本次完成】
+<列出每个已完成的功能>
 
-[File Change Log]
-Added:
-  - <file path> — <purpose>
-Modified:
-  - <file path> — <what was changed>
+【文件变更记录】
+新增：
+  - <文件路径> — <用途>
+修改：
+  - <文件路径> — <改了什么>
 
-[Issues Encountered]
-<Technical problems, unclear requirements, missing design elements, etc. Write "None" if none>
+【遇到的问题】
+<技术问题、需求不清、设计缺失等，若无则写"无">
 
-[Unfinished Items]
-<List in_progress features and reasons, write "None" if none>
+【未完成事项】
+<列出 in_progress 功能及原因，若无则写"无">
 
-[Entry Points for Next Session]
-1. <specific first action>
-2. <subsequent steps>
+【下次会话入口】
+1. <具体的第一步操作>
+2. <后续步骤>
 
-[Notes for Next Claude]
-<Important context, decisions, things to watch out for. Write "None" if none>
+【给下一个 Claude 的备注】
+<重要背景、决策、注意事项。若无则写"无">
 
 ================================================================================
 ```
 
-## Step 3.5: Trigger Preference Evolution (Silent Execution)
+## Step 3.5：触发偏好进化（静默执行）
 
-Execute the `/learn-preferences` logic (silent mode, do not output the full report):
+执行 `/learn-preferences` 逻辑（静默模式，不输出完整报告）：
 
-1. Count the new `decision_log` entries added this session
-2. Check whether any decision_key has reached the evolution threshold (`evolution_threshold`)
-3. If yes → Update `user-preferences.json`, upgrade that preference to `confirmed: true`
-4. If there are new evolutions → Add a one-line notification to the output summary for the user
+1. 统计本次会话新增的 `decision_log` 条目数
+2. 检查是否有 decision_key 已达到进化阈值（`evolution_threshold`）
+3. 若有 → 更新 `user-preferences.json`，将该偏好升级为 `confirmed: true`
+4. 若有新进化 → 在输出摘要中添加一行通知用户
 
 ---
 
-## Step 4: Output Status Summary
+## Step 4：输出状态摘要
 
 ```
-✅ Session safely ended
+✅ 会话已安全结束
 
-Features completed: <N>
-Changes completed: <N>
-In progress: <N> (handle first next session)
-Pending: <N> features, <M> change requests
-Progress log: updated
+已完成功能：<N>
+已完成变更：<N>
+进行中：<N>（下次会话优先处理）
+待处理：<N> 个功能，<M> 个变更请求
+进度日志：已更新
 
-[Preference Evolution]
-<If there are new evolutions, list: ✨ New default: <key> = <value> (appeared N times)>
-<If no new evolutions, write: No new evolutions this session>
+【偏好进化】
+<若有新进化，列出：✨ 新默认值：<key> = <value>（出现 N 次）>
+<若无新进化，写：本次会话无新进化>
 
-Run /session-start next time to continue from here.
+下次运行 /session-start 从此处继续。
 ```
 
-## Mandatory Checks
+## 必检项
 
-- [ ] `features.json` has been updated for all features touched this session
-- [ ] `claude-progress.txt` has this session's record appended
-- [ ] No in_progress features are missing a reason for being unfinished
+- [ ] 本次会话涉及的所有功能已更新 `features.json`
+- [ ] `claude-progress.txt` 已追加本次会话记录
+- [ ] 所有 in_progress 功能都有未完成的原因说明
