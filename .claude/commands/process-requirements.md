@@ -7,6 +7,7 @@ Parse a rough requirements document provided by the user into a structured featu
 The user has provided requirements in one of the following locations:
 - Any file under the `docs/prd/` directory
 - Or text pasted directly into the conversation
+- Or only a vague idea (in this case, use the `kz-prd` skill first to generate a PRD)
 
 ## Step 0: Determine Whether This Is an Iteration
 
@@ -17,6 +18,28 @@ Check first:
 
 If this is an iteration → Stop and inform the user to use `/process-iteration` instead.
 If this is a first-time requirement → Continue with the steps below.
+
+---
+
+## Step 0.5: Check Whether a PRD Needs to Be Generated First
+
+```bash
+ls docs/prd/
+```
+
+Check whether **non-template** user requirements documents exist under `docs/prd/` (excluding `AGENTS.md` and `REQUIREMENTS_TEMPLATE.md`).
+
+**If no documents exist and the user only has a vague description or rough idea:**
+
+→ Read and execute the `kz-prd` skill defined in `.claude/skills/kz-prd/SKILL.md`:
+  1. Based on the user's description, ask questions one by one to collect complete requirements information
+  2. If the requirements involve form controls (input, select, checkbox, etc.), additionally read `.claude/skills/kz-prd/ref/form.md` and ask follow-up questions for each control
+  3. Based on the collected information, generate a structured PRD (Executive Summary → User Stories → Functional Requirements → Design Considerations → Risks & Roadmap)
+  4. Save the generated PRD to `docs/prd/[feature-name].md`
+
+→ Once the PRD is generated, continue with Step 1 for parsing.
+
+**If documents already exist:** Skip this step and proceed directly to Step 1.
 
 ---
 

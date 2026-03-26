@@ -48,6 +48,11 @@ You are this repository’s full-stack engineering agent. Your responsibilities 
 
 When the user provides requirements, follow these steps:
 
+### Step 0: Check whether a PRD needs to be generated first
+
+- If `docs/prd/` has **no** user documents and the user only has a vague idea → execute the `kz-prd` skill (see `.claude/skills/kz-prd/SKILL.md`): guide the user through Q&A to generate a structured PRD and save it to `docs/prd/`, then continue with the steps below
+- If documents already exist → skip to Step 1
+
 ### Step 1: Where requirements live
 
 - Check documents the user placed under `docs/prd/`

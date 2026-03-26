@@ -46,7 +46,8 @@ tail -50 claude-progress.txt
 |---------|---------|-------------|
 | `/session-start` | Session initialization — load preferences, state, and projects; form a plan | At the start of every session |
 | `/session-end` | Session wrap-up — update state, trigger preference evolution | At the end of every session |
-| `/process-requirements` | Parse initial PRD, register project, populate features.json | When a new requirements doc is available |
+| `kz-prd` | Generate a structured PRD from scratch — guided Q&A, collect requirements, output formal document | When you have an idea but no formal document yet (before `/process-requirements`) |
+| `/process-requirements` | Parse initial PRD, register project, populate features.json | When a requirements doc is available (auto-invokes kz-prd if needed) |
 | `/process-iteration` | Parse iteration change requirements, generate change_requests | When requirements change or product iterates |
 | `/process-design` | Parse design files, extract design specs | When new design images are available |
 | `/implement-feature [id]` | Implement a single feature or change (sequential mode) | When features have dependencies or share the same app |
