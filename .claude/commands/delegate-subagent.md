@@ -14,9 +14,13 @@
 ## Step 1：读取当前状态
 
 ```bash
+# 读取元数据和 summary
 cat features.json
 cat agents.json
 cat user-preferences.json
+
+# 读取所有功能详情，筛选 pending 状态
+for f in features/*.json; do cat "$f"; echo "---"; done
 ```
 
 提取：
@@ -135,9 +139,10 @@ cat user-preferences.json
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 禁止操作
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- 不得修改 features.json
+- 不得修改 features.json（索引文件）
+- 不得修改 features/FEAT-XXX.json（功能文件）
 - 不得修改 agents.json
-- 不得修改 claude-progress.txt
+- 不得修改 .claude/progress/ 下的任何文件
 - 不得修改 user-preferences.json
 - 不得修改属于其他功能目录的文件
 
@@ -175,39 +180,36 @@ notes: <给 Orchestrator 的备注，若无则写 "none">
 遍历每个子 Agent 返回的结果：
 
 **成功（success: true）：**
-- 更新 `features.json` 中对应功能：`status → done`，填写 `completed_at`
+- 更新 `features/FEAT-XXX.json`：`status → done`，填写 `completed_at`
 - 更新 `agents.json` 中对应条目：`status → done`，填写 `completed_at`
 
 **失败（success: false）：**
-- 更新 `features.json` 中对应功能：`status → pending`（回滚），在 `notes` 中追加错误原因
+- 更新 `features/FEAT-XXX.json`：`status → pending`（回滚），在 `notes` 中追加错误原因
 - 更新 `agents.json` 中对应条目：`status → failed`，填写 `error`
 
 更新 `features.json` 中 `summary` 的计数。
 
 ---
 
-## Step 8：追加进度日志
+## Step 8：写入进度日志
 
-在 `claude-progress.txt` 末尾追加：
+在 `.claude/progress/sessions/<YYYY-MM-DD>.session.md` 中追加：
 
-```
-================================================================================
-PARALLEL BATCH
-时间：<ISO 8601>
+```markdown
+## 并行批次 <ISO 8601>
 并行数量：<N>
-================================================================================
 
-【批次结果】
+### 批次结果
 <列出每个功能的结果>
 
-【创建文件汇总】
+### 创建文件汇总
 <所有子 Agent 创建/修改文件的合并列表>
 
-【失败功能】
+### 失败功能
 <若有失败，列出原因；否则写"无">
-
-================================================================================
 ```
+
+更新 `.claude/progress/index.json` 的统计数据。
 
 ---
 

@@ -1,5 +1,5 @@
 {
-  "_comment": "Harness Engineering 功能状态机。由 Claude Code 自动维护，请勿手动大幅修改。",
+  "_comment": "Harness Engineering 功能索引。由 Claude Code 自动维护，请勿手动大幅修改。各功能详情存放在 features/ 目录下的独立文件中（如 features/FEAT-001.json）。",
   "project": {
     "name": "待填写",
     "description": "待填写 — 运行 /process-requirements 后自动填充",
@@ -21,7 +21,8 @@
     "changes_pending": 0,
     "last_updated": "2026-03-25T00:00:00Z"
   },
-  "features": [],
+  "features_dir": "features/",
+  "_features_note": "功能列表已拆分到 features/ 目录，每个功能为独立 JSON 文件（FEAT-001.json 等）。读取所有功能：ls features/*.json | xargs -I {} cat {}",
   "change_requests": [],
   "ambiguities": [],
   "design_assets": {

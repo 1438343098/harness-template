@@ -17,6 +17,10 @@ cat user-preferences.json
 ## Step 1：读取功能信息
 
 ```bash
+# 读取目标功能文件
+cat features/FEAT-XXX.json
+
+# 读取项目元数据（获取 projects 信息）
 cat features.json
 ```
 
@@ -44,11 +48,12 @@ cat docs/design/extracted/design-spec.md
 
 ## Step 4：将功能状态改为 in_progress
 
-在 `features.json` 中将该功能的 `status` 改为 `in_progress`，并填写 `started_at`。
+在 `features/FEAT-XXX.json` 中将 `status` 改为 `in_progress`，并填写 `started_at`。
+同步更新 `features.json` 中的 `summary.in_progress` 和 `summary.pending` 计数。
 
-在 `claude-progress.txt` 中追加：
+在 `.claude/progress/features/FEAT-XXX.log` 中追加（文件不存在则创建）：
 ```
-[FEAT-XXX] START: <功能标题> — <时间>
+[<ISO 8601 时间>] START: <功能标题>
 ```
 
 ## Step 5：输出实现计划（等待用户确认）
@@ -113,8 +118,9 @@ cat docs/design/extracted/design-spec.md
 
 ### 每创建一个文件后，追加进度日志
 
+在 `.claude/progress/features/FEAT-XXX.log` 中追加：
 ```
-[FEAT-XXX] FILE: <文件路径> — <文件用途>
+[<ISO 8601 时间>] FILE: <文件路径> — <文件用途>
 ```
 
 ## Step 7：运行校验
@@ -132,21 +138,44 @@ python -m py_compile <文件路径> 2>&1
 
 校验失败必须修复，不可跳过。
 
+### 浏览器测试（frontend / fullstack 功能必须执行）
+
+**工具：Puppeteer（headless Chrome）**
+参见 `.claude/commands/test-browser.md` 获取完整测试编写规范。
+
+```bash
+# 若尚未安装 Puppeteer
+npm install --save-dev puppeteer
+
+# 运行当前功能的浏览器测试
+npm run test:e2e -- --testPathPattern=FEAT-XXX
+```
+
+- 测试文件位置：`<app-path>/tests/e2e/FEAT-XXX.test.js`
+- 每条 `acceptance_criteria` 对应至少一个测试用例
+- 测试失败必须修复，不允许跳过
+
 ## Step 8：将功能状态更新为 done
 
-更新 `features.json`：
+更新 `features/FEAT-XXX.json`：
 - `status`：`done`
 - `completed_at`：当前时间
 
-在 `claude-progress.txt` 中追加：
+同步更新 `features.json` 中的 `summary`（`in_progress` -1，`done` +1，`last_updated`）。
+
+在 `.claude/progress/features/FEAT-XXX.log` 中追加：
 ```
-[FEAT-XXX] DONE: <功能标题> — <时间>
+[<ISO 8601 时间>] DONE: <功能标题>
   验收：
   ✅ <验收标准 1>
   ✅ <验收标准 2>
   文件：
   - <文件路径>
 ```
+
+同步更新 `.claude/progress/index.json`：
+- 在 `features` 数组中添加 `"FEAT-XXX"`（若不存在）
+- 更新 `statistics.total_features` 和 `updated_at`
 
 ## Step 9：输出完成报告
 

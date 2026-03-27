@@ -51,11 +51,11 @@
 
 ---
 
-## Step 4：更新 features.json
+## Step 4：更新功能文件
 
 ### 添加变更记录
 
-在 `features.json` 中添加 `change_requests` 数组（不存在则创建）：
+在 `features.json` 中的 `change_requests` 数组中添加（不存在则创建）：
 
 ```json
 {
@@ -82,13 +82,13 @@
 
 ### 标记原功能版本
 
-对于 `modify` 类型，在原功能的 `notes` 中追加：
+对于 `modify` 类型，在对应的 `features/FEAT-XXX.json` 的 `notes` 中追加：
 ```
 变更历史：
   - CHANGE-001 (2026-03-25)：<变更摘要>
 ```
 
-对于 `replace` 类型，将原功能的 `status` 改为 `deprecated`。
+对于 `replace` 类型，将 `features/FEAT-XXX.json` 的 `status` 改为 `deprecated`，并更新 `features.json` 中 `summary.deprecated` 计数。
 
 ---
 
@@ -153,7 +153,7 @@
 ### 当 breaking_change = true 时
 
 必须：
-1. 在 `claude-progress.txt` 中明确标记 `[BREAKING CHANGE]`
+1. 在 `.claude/progress/sessions/<YYYY-MM-DD>.session.md` 中明确标记 `[BREAKING CHANGE]`
 2. 列出所有受影响的调用方
 3. 提供迁移说明（改了什么、调用方需要怎么做）
 
@@ -161,7 +161,7 @@
 
 ## 迭代版本管理
 
-当一个功能经过多次迭代时，在 `features.json` 的对应功能条目中维护版本历史：
+当一个功能经过多次迭代时，在对应的 `features/FEAT-XXX.json` 中维护版本历史：
 
 ```json
 {

@@ -10,9 +10,11 @@
 - 遇到了什么问题或决策
 - 哪些内容未完成
 
-## Step 2：更新 features.json
+## Step 2：更新功能文件
 
-**本次会话已完成的功能：**
+对每个**本次会话涉及的功能**，更新对应的 `features/FEAT-XXX.json`：
+
+**已完成的功能：**
 ```json
 {
   "status": "done",
@@ -21,7 +23,7 @@
 }
 ```
 
-**本次会话已开始但未完成的功能：**
+**已开始但未完成的功能：**
 ```json
 {
   "status": "in_progress",
@@ -29,43 +31,49 @@
 }
 ```
 
-同步更新 `summary` 字段中的计数。
+同步更新 `features.json` 中的 `summary` 字段计数（`total`、`pending`、`in_progress`、`done` 等）。
 
-## Step 3：追加进度日志
+## Step 3：写入进度会话日志
 
-在 `claude-progress.txt` 末尾追加以下内容（**不得修改已有内容**）：
+创建或更新 `.claude/progress/sessions/<YYYY-MM-DD>.session.md`（同一天多次结束则追加内容）：
 
-```
-================================================================================
-SESSION END
-日期：<YYYY-MM-DD>
-时间：<HH:MM>
-================================================================================
+```markdown
+# Session: <YYYY-MM-DD>
+**时间**: <YYYY-MM-DD HH:MM>
+**状态**: 已完成
 
-【本次完成】
-<列出每个已完成的功能>
+## 本次完成
+<列出每个已完成的功能，格式：- FEAT-XXX：<标题>>
 
-【文件变更记录】
-新增：
-  - <文件路径> — <用途>
-修改：
-  - <文件路径> — <改了什么>
+## 文件变更记录
+### 新增
+- <文件路径> — <用途>
 
-【遇到的问题】
+### 修改
+- <文件路径> — <改了什么>
+
+## 遇到的问题
 <技术问题、需求不清、设计缺失等，若无则写"无">
 
-【未完成事项】
+## 未完成事项
 <列出 in_progress 功能及原因，若无则写"无">
 
-【下次会话入口】
+## 下次会话入口
 1. <具体的第一步操作>
 2. <后续步骤>
 
-【给下一个 Claude 的备注】
+## 给下一个 Claude 的备注
 <重要背景、决策、注意事项。若无则写"无">
 
-================================================================================
+---
+**记录者**: Claude Code
+**最后更新**: <ISO 8601 时间>
 ```
+
+然后更新 `.claude/progress/index.json`：
+- 在 `sessions` 数组中添加或更新本次会话条目
+- 更新 `statistics.total_sessions`
+- 更新 `latest_session` 和 `updated_at`
 
 ## Step 3.5：触发偏好进化（静默执行）
 
@@ -98,6 +106,8 @@ SESSION END
 
 ## 必检项
 
-- [ ] 本次会话涉及的所有功能已更新 `features.json`
-- [ ] `claude-progress.txt` 已追加本次会话记录
+- [ ] 本次会话涉及的所有功能已更新对应的 `features/FEAT-XXX.json`
+- [ ] `features.json` 中的 `summary` 计数已同步
+- [ ] `.claude/progress/sessions/<YYYY-MM-DD>.session.md` 已写入
+- [ ] `.claude/progress/index.json` 已更新
 - [ ] 所有 in_progress 功能都有未完成的原因说明

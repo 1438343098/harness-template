@@ -15,15 +15,25 @@ cat user-preferences.json
 ## Step 1：读取进度日志
 
 ```bash
-tail -80 claude-progress.txt
+# 1. 读取索引，找到最新会话文件
+cat .claude/progress/index.json
+
+# 2. 读取最新会话文件（latest_session 字段对应的文件）
+cat .claude/progress/sessions/<latest_session>.session.md
+
+# 3. 若存在多个近期会话，也读取前一个以获取完整上下文
 ```
 
-若文件不存在或没有 SESSION END 记录，则为首次会话。
+若 `.claude/progress/sessions/` 下没有文件，则为首次会话。
 
 ## Step 2：读取功能状态
 
 ```bash
+# 读取功能索引（摘要和元数据）
 cat features.json
+
+# 读取所有功能详情
+ls features/*.json 2>/dev/null && for f in features/*.json; do cat "$f"; echo "---"; done
 ```
 
 解析并分类：
@@ -73,16 +83,12 @@ ls docs/design/extracted/
 ```
 
 识别：
-- `docs/prd/` 是否有尚未解析的用户需求文档（features.json 为空）
+- `docs/prd/` 是否有尚未解析的用户需求文档（`features/*.json` 为空）
 - `docs/design/assets/` 是否有设计图，且 `extracted/` 中尚无 design-spec.md
 
 ## Step 3.5：读取项目注册表
 
-```bash
-cat features.json
-```
-
-提取 `projects.apps` 和 `projects.services`，了解当前存在哪些子项目。
+提取 `features.json` 中的 `projects.apps` 和 `projects.services`，了解当前存在哪些子项目。
 
 ## Step 4：输出会话简报
 
@@ -104,7 +110,7 @@ cat features.json
 
 【已完成】
 共完成 <N> 个功能
-上次会话：<claude-progress.txt 中最后一条 SESSION END 的摘要，若无则写"首次会话">
+上次会话：<最新 .claude/progress/sessions/ 会话文件的摘要，若无则写"首次会话">
 
 【并行任务遗留】（若有被中断的并行任务）
 ⚠️ <FEAT-ID>：<标题> — 状态已重置为 pending，需重新实现
@@ -134,5 +140,5 @@ cat features.json
 ## 注意事项
 
 - 存在 `in_progress` 功能时，必须优先续做 — 不得开启新功能
-- `features.json` 为空时，提示用户运行 `/process-requirements`
+- `features/` 目录为空（无 `*.json` 文件）时，提示用户运行 `/process-requirements`
 - `docs/design/assets/` 有图片但无 `extracted/design-spec.md` 时，提示用户运行 `/process-design`

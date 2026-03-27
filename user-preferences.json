@@ -1,8 +1,24 @@
 {
   "_comment": "此文件由 Claude Code 自动维护。记录用户的决策偏好，达到进化阈值后自动成为默认值。",
   "evolution_threshold": 3,
-  "preferences": {},
-  "decision_log": [],
+  "preferences": {
+    "testing.browser": {
+      "value": "puppeteer",
+      "confirmed": true,
+      "description": "浏览器端对端测试工具，使用 Puppeteer（headless Chrome）",
+      "install_command": "npm install --save-dev puppeteer",
+      "note": "每个前端项目实现完成后，若需浏览器测试，默认安装并使用 Puppeteer"
+    }
+  },
+  "decision_log": [
+    {
+      "timestamp": "2026-03-27T00:00:00Z",
+      "decision_key": "testing.browser",
+      "value": "puppeteer",
+      "context": "全局测试工具声明",
+      "source": "user_explicit"
+    }
+  ],
   "last_evolved": null,
-  "last_updated": "2026-03-25T00:00:00Z"
+  "last_updated": "2026-03-27T00:00:00Z"
 }

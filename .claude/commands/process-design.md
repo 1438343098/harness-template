@@ -159,11 +159,13 @@ H2 标题：<大小>px / <字重>
 <所有进行了推断或假设的地方>
 ```
 
-## Step 5：更新 features.json
+## Step 5：更新功能文件
 
-检查 features.json，为设计中识别的每个页面添加对应的前端功能（若不存在）。
+检查 `features/` 目录下已有的功能文件，为设计中识别的每个页面新增对应的前端功能文件 `features/FEAT-XXX.json`（若不存在）。
 
-将 `design_assets.processed` 更新为 `true`，填写 `files` 列表。
+同步更新 `features.json`：
+- 将 `design_assets.processed` 更新为 `true`，填写 `files` 列表
+- 更新 `summary.total` 和 `summary.pending` 计数
 
 ## Step 6：输出解析报告
 

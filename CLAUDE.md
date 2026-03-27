@@ -21,10 +21,12 @@
 
 ### 会话开始时（必须执行）
 
-1. 读取进度日志  
-   - 读取 `claude-progress.txt` 最后 50 行
-2. 读取功能状态  
-   - 读取 `features.json`，找出 `status=in_progress` 的功能  
+1. 读取进度日志
+   - 读取 `.claude/progress/index.json`，找到最新会话文件路径
+   - 读取 `.claude/progress/sessions/<latest>.session.md`
+2. 读取功能状态
+   - 读取 `features.json`（索引和 summary）
+   - 读取 `features/*.json`，找出 `status=in_progress` 的功能
    - 按优先级找出第一个 `status=pending` 功能
 3. 向用户播报当前状态  
    - 上次会话完成了什么  
@@ -36,8 +38,8 @@
 
 ### 会话结束时（必须执行）
 
-1. 将已完成功能在 `features.json` 中更新为 `done`
-2. 按规范向 `claude-progress.txt` 追加会话总结
+1. 将已完成功能在 `features/FEAT-XXX.json` 中更新为 `done`，同步更新 `features.json` 的 `summary`
+2. 在 `.claude/progress/sessions/<YYYY-MM-DD>.session.md` 写入会话总结，更新 `index.json`
 3. 明确下一个 pending 功能
 
 **严禁：未记录进度就结束会话。**
@@ -129,8 +131,8 @@
 
 ### 开始实现某功能前
 
-1. 在 `features.json` 将功能改为 `in_progress`
-2. 在 `claude-progress.txt` 追加 START 记录
+1. 在 `features/FEAT-XXX.json` 将功能改为 `in_progress`，同步更新 `features.json` 的 `summary`
+2. 在 `.claude/progress/features/FEAT-XXX.log` 追加 START 记录
 3. 检查依赖是否已完成
 
 ### 实现过程中
@@ -159,8 +161,8 @@
 
 ### 完成功能后
 
-1. 在 `features.json` 将状态改为 `done` 并写 `completed_at`
-2. 在 `claude-progress.txt` 追加 DONE 记录
+1. 在 `features/FEAT-XXX.json` 将状态改为 `done` 并写 `completed_at`，同步更新 `features.json` 的 `summary`
+2. 在 `.claude/progress/features/FEAT-XXX.log` 追加 DONE 记录，更新 `index.json`
 3. 运行相关测试（若存在）
 
 ---
@@ -169,8 +171,8 @@
 
 ### Git 提交前检查清单（必须）
 
-- [ ] `features.json` 状态已更新
-- [ ] `claude-progress.txt` 已记录本次变更
+- [ ] `features/FEAT-XXX.json` 状态已更新，`features.json` 的 `summary` 已同步
+- [ ] `.claude/progress/sessions/<YYYY-MM-DD>.session.md` 已记录本次变更
 - [ ] 无硬编码 API Key/密码
 - [ ] 新增 API 端点均有输入校验
 - [ ] 关键业务逻辑有必要注释
@@ -289,7 +291,7 @@
 
 - `APP-web` -> 仅可写 `apps/web/`
 - `SVC-api` -> 仅可写 `services/api/`
-- **禁止**子 Agent 写入：`features.json`、`agents.json`、`claude-progress.txt`
+- **禁止**子 Agent 写入：`features.json`、`features/*.json`、`agents.json`、`.claude/progress/`
 
 ### 状态一致性
 
@@ -329,8 +331,11 @@
 
 | 文件/目录 | 用途 |
 |------|------|
-| `features.json` | 功能状态机 + 项目注册表 |
-| `claude-progress.txt` | 会话日志（仅追加） |
+| `features.json` | 功能索引 + 项目注册表 + summary（轻量，无功能数组） |
+| `features/` | 功能详情目录，每个功能独立 JSON 文件（FEAT-XXX.json） |
+| `.claude/progress/sessions/` | 会话日志（按日期，YYYY-MM-DD.session.md） |
+| `.claude/progress/features/` | 功能进度日志（按功能 ID，FEAT-XXX.log） |
+| `.claude/progress/index.json` | 进度系统元数据索引 |
 | `user-preferences.json` | 用户偏好与自动进化 |
 | `docs/prd/` | 需求文档目录（含迭代文档） |
 | `docs/design/assets/` | 用户设计图 |
@@ -338,6 +343,7 @@
 | `docs/design/extracted/` | 提取后的设计规范 |
 | `apps/` | 所有前端应用 |
 | `services/` | 所有后端服务 |
+| `<app-path>/tests/e2e/` | Puppeteer 浏览器端对端测试（按功能 ID 命名） |
 | `.claude/commands/` | 可用技能命令 |
 
 ---
