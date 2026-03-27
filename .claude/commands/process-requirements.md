@@ -144,9 +144,9 @@ Priority rules (1 = highest):
 3. **Supporting Features** — Enhance the experience but not required
 4. **Optimization Features** — Performance tuning, UI polish, etc.
 
-## Step 4: Generate features.json
+## Step 4: Generate feature files
 
-Write the extracted features into `features.json` in the following format:
+### 4a. Update `features.json` (index + metadata only)
 
 ```json
 {
@@ -167,30 +167,7 @@ Write the extracted features into `features.json` in the following format:
     "done": 0,
     "last_updated": "<ISO 8601>"
   },
-  "features": [
-    {
-      "id": "FEAT-001",
-      "title": "<feature title>",
-      "module": "<module it belongs to>",
-      "app": "APP-web | SVC-api | SVC-worker | ...",
-      "type": "backend|frontend|fullstack|infra",
-      "priority": 1,
-      "status": "pending",
-      "version": "v1",
-      "version_history": [],
-      "description": "<detailed feature description>",
-      "acceptance_criteria": [
-        "<acceptance criteria 1>",
-        "<acceptance criteria 2>"
-      ],
-      "dependencies": [],
-      "estimated_hours": 2,
-      "notes": "<notes, especially for ambiguous points>",
-      "created_at": "<ISO 8601>",
-      "started_at": null,
-      "completed_at": null
-    }
-  ],
+  "features_dir": "features/",
   "ambiguities": [
     {
       "description": "<ambiguous requirements description>",
@@ -209,7 +186,34 @@ Write the extracted features into `features.json` in the following format:
 }
 ```
 
-**Note:** `estimated_hours` for each feature must not exceed 4 hours. If it does, split the feature.
+### 4b. Create one file per feature: `features/FEAT-XXX.json`
+
+```json
+{
+  "id": "FEAT-001",
+  "title": "<feature title>",
+  "module": "<module it belongs to>",
+  "app": "APP-web | SVC-api | SVC-worker | ...",
+  "type": "backend|frontend|fullstack|infra",
+  "priority": 1,
+  "status": "pending",
+  "version": "v1",
+  "version_history": [],
+  "description": "<detailed feature description>",
+  "acceptance_criteria": [
+    "<acceptance criteria 1>",
+    "<acceptance criteria 2>"
+  ],
+  "dependencies": [],
+  "estimated_hours": 2,
+  "notes": "<notes, especially for ambiguous points>",
+  "created_at": "<ISO 8601>",
+  "started_at": null,
+  "completed_at": null
+}
+```
+
+**Note:** `estimated_hours` per feature must not exceed 4 hours. Split features that do.
 
 ## Step 5: Output Parsing Report
 

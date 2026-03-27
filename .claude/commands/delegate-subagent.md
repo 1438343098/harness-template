@@ -14,9 +14,13 @@ Assign multiple independent features to parallel sub-agents for simultaneous imp
 ## Step 1: Read Current State
 
 ```bash
+# Read the index and summary
 cat features.json
 cat agents.json
 cat user-preferences.json
+
+# Read all feature details and filter for pending
+for f in features/*.json; do cat "$f"; echo "---"; done
 ```
 
 Extract:
@@ -136,9 +140,10 @@ Writing to any other project directory is strictly forbidden.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Prohibited Actions
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Do not modify features.json
+- Do not modify features.json (index file)
+- Do not modify features/FEAT-XXX.json (feature files)
 - Do not modify agents.json
-- Do not modify claude-progress.txt
+- Do not modify any file under .claude/progress/
 - Do not modify user-preferences.json
 - Do not modify files belonging to other features' directories
 
@@ -176,39 +181,36 @@ Wait for all sub-agents to return before proceeding to Step 7.
 Iterate through each sub-agent's returned result:
 
 **Success (success: true):**
-- Update the corresponding feature in `features.json`: `status → done`, fill in `completed_at`
+- Update `features/FEAT-XXX.json`: `status → done`, fill in `completed_at`
 - Update the corresponding entry in `agents.json`: `status → done`, fill in `completed_at`
 
 **Failure (success: false):**
-- Update the corresponding feature in `features.json`: `status → pending` (rollback), append error reason to `notes`
+- Update `features/FEAT-XXX.json`: `status → pending` (rollback), append error reason to `notes`
 - Update the corresponding entry in `agents.json`: `status → failed`, fill in `error`
 
 Update the `summary` counts in `features.json`.
 
 ---
 
-## Step 8: Append Progress Log
+## Step 8: Write Progress Log
 
-Append to the end of `claude-progress.txt`:
+Append to `.claude/progress/sessions/<YYYY-MM-DD>.session.md`:
 
-```
-================================================================================
-PARALLEL BATCH
-Time: <ISO 8601>
+```markdown
+## Parallel Batch <ISO 8601>
 Parallel count: <N>
-================================================================================
 
-[Batch Results]
+### Batch Results
 <list results for each feature>
 
-[Summary of Created Files]
+### Summary of Created Files
 <merged list of all files created/modified by sub-agents>
 
-[Failed Features]
+### Failed Features
 <if any failures, list reasons; otherwise write "none">
-
-================================================================================
 ```
+
+Update `.claude/progress/index.json` statistics.
 
 ---
 

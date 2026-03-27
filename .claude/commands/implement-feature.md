@@ -17,6 +17,10 @@ Extract all preferences with `confirmed: true`. When making technology choices d
 ## Step 1: Read Feature Information
 
 ```bash
+# Read the target feature file
+cat features/FEAT-XXX.json
+
+# Read project metadata (to get projects info)
 cat features.json
 ```
 
@@ -44,11 +48,12 @@ Locate the page/component design spec corresponding to this feature.
 
 ## Step 4: Set Feature Status to in_progress
 
-Update the feature's `status` to `in_progress` in `features.json`, and fill in `started_at`.
+Update `status` to `in_progress` and fill in `started_at` in `features/FEAT-XXX.json`.
+Sync `features.json` summary counts (`in_progress` +1, `pending` -1).
 
-Append to `claude-progress.txt`:
+Append to `.claude/progress/features/FEAT-XXX.log` (create if absent):
 ```
-[FEAT-XXX] START: <feature title> — <time>
+[<ISO 8601 time>] START: <feature title>
 ```
 
 ## Step 5: Output Implementation Plan (Wait for User Confirmation)
@@ -113,8 +118,9 @@ If the user says "continue", "OK", or does not object, begin implementation imme
 
 ### After creating each file, append a progress log entry
 
+Append to `.claude/progress/features/FEAT-XXX.log`:
 ```
-[FEAT-XXX] FILE: <file path> — <file purpose>
+[<ISO 8601 time>] FILE: <file path> — <file purpose>
 ```
 
 ## Step 7: Run Validation
@@ -132,21 +138,44 @@ python -m py_compile <file path> 2>&1
 
 If validation fails, it must be fixed before proceeding.
 
+### Browser testing (required for frontend / fullstack features)
+
+**Tool: Puppeteer (headless Chrome)**
+See `.claude/commands/test-browser.md` for the full testing spec.
+
+```bash
+# Install if not already present
+npm install --save-dev puppeteer
+
+# Run browser tests for this feature
+npm run test:e2e -- --testPathPattern=FEAT-XXX
+```
+
+- Test file location: `<app-path>/tests/e2e/FEAT-XXX.test.js`
+- Every `acceptance_criteria` entry must map to at least one test case
+- Test failures must be fixed; `test.skip` is not allowed
+
 ## Step 8: Update Feature Status to done
 
-Update `features.json`:
+Update `features/FEAT-XXX.json`:
 - `status`: `done`
 - `completed_at`: current time
 
-Append to `claude-progress.txt`:
+Sync `features.json` summary (`in_progress` -1, `done` +1, `last_updated`).
+
+Append to `.claude/progress/features/FEAT-XXX.log`:
 ```
-[FEAT-XXX] DONE: <feature title> — <time>
+[<ISO 8601 time>] DONE: <feature title>
   Acceptance:
   ✅ <acceptance criteria 1>
   ✅ <acceptance criteria 2>
   Files:
   - <file path>
 ```
+
+Update `.claude/progress/index.json`:
+- Add `"FEAT-XXX"` to the `features` array if not present
+- Increment `statistics.total_features` and update `updated_at`
 
 ## Step 9: Output Completion Report
 

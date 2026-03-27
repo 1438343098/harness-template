@@ -15,15 +15,25 @@ Extract all preferences with `confirmed: true`. For all relevant decisions in th
 ## Step 1: Read Progress Log
 
 ```bash
-tail -80 claude-progress.txt
+# 1. Read the index to find the latest session file
+cat .claude/progress/index.json
+
+# 2. Read the latest session file (the file referenced by latest_session)
+cat .claude/progress/sessions/<latest_session>.session.md
+
+# 3. If multiple recent sessions exist, also read the previous one for full context
 ```
 
-If the file does not exist or has no SESSION END record, this is the first session.
+If `.claude/progress/sessions/` contains no files, this is the first session.
 
 ## Step 2: Read Feature Status
 
 ```bash
+# Read the feature index (summary and metadata)
 cat features.json
+
+# Read all individual feature files
+ls features/*.json 2>/dev/null && for f in features/*.json; do cat "$f"; echo "---"; done
 ```
 
 Parse and categorize:
@@ -73,16 +83,12 @@ ls docs/design/extracted/
 ```
 
 Identify:
-- Whether `docs/prd/` has user requirements documents that have not been parsed (features.json is empty)
+- Whether `docs/prd/` has user requirements not yet parsed (`features/*.json` is empty)
 - Whether `docs/design/assets/` has design images and `extracted/` does not have design-spec.md
 
 ## Step 3.5: Read Project Registry
 
-```bash
-cat features.json
-```
-
-Extract `projects.apps` and `projects.services` to understand what sub-projects currently exist.
+Extract `projects.apps` and `projects.services` from `features.json` to understand what sub-projects currently exist.
 
 ## Step 4: Output Session Brief
 
@@ -104,7 +110,7 @@ Backend services/:
 
 [Completed]
 <N> features completed in total
-Last session: <summary of the last SESSION END in claude-progress.txt, or "First session" if none>
+Last session: <summary from the latest .claude/progress/sessions/ file, or "First session" if none>
 
 [Leftover Parallel Tasks] (if any interrupted parallel tasks)
 ⚠️ <FEAT-ID>: <title> — status has been reset to pending, needs re-implementation
@@ -134,5 +140,5 @@ Ask the user if there are any changes or new inputs. If not, proceed as planned.
 ## Notes
 
 - When there are `in_progress` features, they must be resumed first — do not start new features
-- When `features.json` is empty, prompt the user to run `/process-requirements`
+- When `features/` contains no `*.json` files, prompt the user to run `/process-requirements`
 - When `docs/design/assets/` has images but no `extracted/design-spec.md`, prompt the user to run `/process-design`

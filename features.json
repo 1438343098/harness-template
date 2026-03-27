@@ -1,5 +1,5 @@
 {
-  "_comment": "Harness Engineering feature state machine. Maintained by Claude Code; avoid large manual edits.",
+  "_comment": "Harness Engineering feature index. Maintained by Claude Code; avoid large manual edits. Individual feature details live in the features/ directory (e.g. features/FEAT-001.json).",
   "project": {
     "name": "TBD",
     "description": "TBD — filled automatically after running /process-requirements",
@@ -21,7 +21,8 @@
     "changes_pending": 0,
     "last_updated": "2026-03-25T00:00:00Z"
   },
-  "features": [],
+  "features_dir": "features/",
+  "_features_note": "Feature list is split into the features/ directory. Each feature is a standalone JSON file (FEAT-001.json, etc.). To read all: ls features/*.json | xargs -I {} cat {}",
   "change_requests": [],
   "ambiguities": [],
   "design_assets": {

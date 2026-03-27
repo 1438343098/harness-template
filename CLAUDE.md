@@ -21,23 +21,25 @@ You are this repository’s full-stack engineering agent. Your responsibilities 
 
 ### At session start (required)
 
-1. Read the progress log  
-   - Read the last 50 lines of `claude-progress.txt`
-2. Read feature state  
-   - Read `features.json` and list features with `status=in_progress`  
+1. Read the progress log
+   - Read `.claude/progress/index.json` to find the latest session file path
+   - Read `.claude/progress/sessions/<latest>.session.md`
+2. Read feature state
+   - Read `features.json` (index and summary)
+   - Read `features/*.json` and list features with `status=in_progress`
    - By priority, identify the first feature with `status=pending`
-3. Report status to the user  
-   - What the last session completed  
-   - Any unfinished `in_progress` features  
+3. Report status to the user
+   - What the last session completed
+   - Any unfinished `in_progress` features
    - What this session plans to do
-4. If any `in_progress` feature remains unfinished  
-   - You must continue that work first; do not start a new feature arbitrarily  
+4. If any `in_progress` feature remains unfinished
+   - You must continue that work first; do not start a new feature arbitrarily
    - Ask whether anything is blocking progress
 
 ### At session end (required)
 
-1. Set completed features to `done` in `features.json`
-2. Append a session summary to `claude-progress.txt` per the format
+1. Set completed features to `done` in `features/FEAT-XXX.json`; sync `features.json` summary
+2. Write the session summary to `.claude/progress/sessions/<YYYY-MM-DD>.session.md`; update `index.json`
 3. State the next `pending` feature clearly
 
 **Do not end a session without logging progress.**
@@ -129,8 +131,8 @@ Map identified UI components to frontend implementation tasks and update `featur
 
 ### Before starting a feature
 
-1. Set the feature to `in_progress` in `features.json`
-2. Append a START entry to `claude-progress.txt`
+1. Set `status` to `in_progress` in `features/FEAT-XXX.json`; sync `features.json` summary
+2. Append a START entry to `.claude/progress/features/FEAT-XXX.log`
 3. Verify dependencies are done
 
 ### During implementation
@@ -159,8 +161,8 @@ Forbidden:
 
 ### After completing a feature
 
-1. Set status to `done` with `completed_at` in `features.json`
-2. Append a DONE entry to `claude-progress.txt`
+1. Set `status` to `done` with `completed_at` in `features/FEAT-XXX.json`; sync `features.json` summary
+2. Append a DONE entry to `.claude/progress/features/FEAT-XXX.log`; update `index.json`
 3. Run relevant tests if they exist
 
 ---
@@ -169,8 +171,8 @@ Forbidden:
 
 ### Pre-commit checklist (required)
 
-- [ ] `features.json` updated
-- [ ] `claude-progress.txt` records this change
+- [ ] `features/FEAT-XXX.json` updated; `features.json` summary in sync
+- [ ] `.claude/progress/sessions/<YYYY-MM-DD>.session.md` records this change
 - [ ] No hard-coded API keys or passwords
 - [ ] New API endpoints have input validation
 - [ ] Non-trivial business logic has necessary comments
@@ -289,7 +291,7 @@ Use `/delegate-subagent` when:
 
 - `APP-web` → may write only `apps/web/`
 - `SVC-api` → may write only `services/api/`
-- **Sub-agents must not** write: `features.json`, `agents.json`, `claude-progress.txt`
+- **Sub-agents must not** write: `features.json`, `features/*.json`, `agents.json`, `.claude/progress/`
 
 ### State consistency
 
@@ -321,7 +323,7 @@ These count as iterations (use `/process-iteration`):
 1. Append a change note at the top of edited files:  
    `// CHANGE-XXX (date): <summary>`
 2. Prefer extending over rewriting to reduce regression risk
-3. Mark breaking API changes in the progress log with `[BREAKING CHANGE]`
+3. Mark breaking API changes in `.claude/progress/sessions/<YYYY-MM-DD>.session.md` with `[BREAKING CHANGE]`
 
 ---
 
@@ -329,8 +331,11 @@ These count as iterations (use `/process-iteration`):
 
 | Path | Purpose |
 |------|---------|
-| `features.json` | Feature state machine + project registry |
-| `claude-progress.txt` | Session log (append-only) |
+| `features.json` | Feature index + project registry + summary (lightweight; no feature array) |
+| `features/` | Feature detail directory — one JSON file per feature (FEAT-XXX.json) |
+| `.claude/progress/sessions/` | Session logs by date (YYYY-MM-DD.session.md) |
+| `.claude/progress/features/` | Per-feature progress logs (FEAT-XXX.log) |
+| `.claude/progress/index.json` | Progress system metadata index |
 | `user-preferences.json` | User preferences and evolution |
 | `docs/prd/` | Requirements (including iteration notes) |
 | `docs/design/assets/` | User design images |
@@ -338,6 +343,7 @@ These count as iterations (use `/process-iteration`):
 | `docs/design/extracted/` | Extracted design specs |
 | `apps/` | All frontend apps |
 | `services/` | All backend services |
+| `<app-path>/tests/e2e/` | Puppeteer browser end-to-end tests (named by feature ID) |
 | `.claude/commands/` | Slash-command skills |
 
 ---

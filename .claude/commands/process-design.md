@@ -159,11 +159,13 @@ Overall Quality: <A/B/C>
 <all places where inferences or assumptions were made>
 ```
 
-## Step 5: Update features.json
+## Step 5: Update feature files
 
-Check features.json and add corresponding frontend features for each page identified in the design (if not already present).
+Check the existing files in `features/` and create a new `features/FEAT-XXX.json` for each page identified in the design that does not already have a feature file.
 
-Update `design_assets.processed` to `true` and fill in the `files` list.
+Then update `features.json`:
+- Set `design_assets.processed` to `true` and fill in the `files` list
+- Update `summary.total` and `summary.pending` counts
 
 ## Step 6: Output Parsing Report
 

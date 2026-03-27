@@ -51,11 +51,11 @@ Backward compatible: whether this change is a breaking change (affects API inter
 
 ---
 
-## Step 4: Update features.json
+## Step 4: Update feature files
 
 ### Add Change Records
 
-Add a `change_requests` array to `features.json` (create it if it does not exist):
+Add the entry to the `change_requests` array in `features.json` (create the array if absent):
 
 ```json
 {
@@ -82,13 +82,13 @@ Add a `change_requests` array to `features.json` (create it if it does not exist
 
 ### Mark Original Feature Version
 
-For `modify` type, append to the original feature's `notes`:
+For `modify` type, append to the original feature's `notes` in `features/FEAT-XXX.json`:
 ```
 Change history:
   - CHANGE-001 (2026-03-25): <change summary>
 ```
 
-For `replace` type, update the original feature's `status` to `deprecated`.
+For `replace` type, update the original `features/FEAT-XXX.json` `status` to `deprecated` and increment `features.json` `summary.deprecated`.
 
 ---
 
@@ -153,7 +153,7 @@ When modifying existing code:
 ### When breaking_change = true
 
 Must:
-1. Clearly mark `[BREAKING CHANGE]` in `claude-progress.txt`
+1. Clearly mark `[BREAKING CHANGE]` in `.claude/progress/sessions/<YYYY-MM-DD>.session.md`
 2. List all affected callers
 3. Provide migration notes (what changed, what callers need to do)
 
@@ -161,7 +161,7 @@ Must:
 
 ## Iteration Version Management
 
-When a feature goes through multiple iterations, maintain version history in that feature entry in `features.json`:
+When a feature goes through multiple iterations, maintain version history in the corresponding `features/FEAT-XXX.json`:
 
 ```json
 {

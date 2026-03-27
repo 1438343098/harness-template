@@ -10,7 +10,9 @@ Compile the completion checklist for this session:
 - What problems or decisions were encountered
 - What was left unfinished
 
-## Step 2: Update features.json
+## Step 2: Update feature files
+
+For every feature touched this session, update the corresponding `features/FEAT-XXX.json`:
 
 **Features completed this session:**
 ```json
@@ -25,47 +27,53 @@ Compile the completion checklist for this session:
 ```json
 {
   "status": "in_progress",
-  "notes": "<description of current progress, entry point for next session>"
+  "notes": "<current progress, entry point for next session>"
 }
 ```
 
-Sync the counts in the `summary` field accordingly.
+Then sync the `summary` counts in `features.json` (`total`, `pending`, `in_progress`, `done`, `last_updated`).
 
-## Step 3: Append to Progress Log
+## Step 3: Write the session progress log
 
-Append the following to the end of `claude-progress.txt` (**do not modify existing content**):
+Create or update `.claude/progress/sessions/<YYYY-MM-DD>.session.md` (append if the file already exists for today):
 
-```
-================================================================================
-SESSION END
-Date: <YYYY-MM-DD>
-Time: <HH:MM>
-================================================================================
+```markdown
+# Session: <YYYY-MM-DD>
+**Time**: <YYYY-MM-DD HH:MM>
+**Status**: Completed
 
-[Completed This Session]
-<List each completed feature>
+## Completed This Session
+<List each completed feature: - FEAT-XXX: <title>>
 
-[File Change Log]
-Added:
-  - <file path> — <purpose>
-Modified:
-  - <file path> — <what was changed>
+## File Change Log
+### Added
+- <file path> — <purpose>
 
-[Issues Encountered]
-<Technical problems, unclear requirements, missing design elements, etc. Write "None" if none>
+### Modified
+- <file path> — <what changed>
 
-[Unfinished Items]
-<List in_progress features and reasons, write "None" if none>
+## Issues Encountered
+<Technical problems, unclear requirements, missing design assets, etc. Write "None" if none.>
 
-[Entry Points for Next Session]
+## Unfinished Items
+<List in_progress features and reasons. Write "None" if none.>
+
+## Entry Points for Next Session
 1. <specific first action>
 2. <subsequent steps>
 
-[Notes for Next Claude]
-<Important context, decisions, things to watch out for. Write "None" if none>
+## Notes for Next Claude
+<Important context, decisions, watch-outs. Write "None" if none.>
 
-================================================================================
+---
+**Author**: Claude Code
+**Last updated**: <ISO 8601 time>
 ```
+
+Then update `.claude/progress/index.json`:
+- Add or update the entry for this session in the `sessions` array
+- Increment `statistics.total_sessions` if it's a new session
+- Update `latest_session` and `updated_at`
 
 ## Step 3.5: Trigger Preference Evolution (Silent Execution)
 
@@ -98,6 +106,8 @@ Run /session-start next time to continue from here.
 
 ## Mandatory Checks
 
-- [ ] `features.json` has been updated for all features touched this session
-- [ ] `claude-progress.txt` has this session's record appended
+- [ ] Each touched feature has its `features/FEAT-XXX.json` updated
+- [ ] `features.json` `summary` counts are in sync
+- [ ] `.claude/progress/sessions/<YYYY-MM-DD>.session.md` has been written
+- [ ] `.claude/progress/index.json` has been updated
 - [ ] No in_progress features are missing a reason for being unfinished

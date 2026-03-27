@@ -1,8 +1,24 @@
 {
   "_comment": "Maintained by Claude Code. Records user decision preferences; values become defaults after the evolution threshold.",
   "evolution_threshold": 3,
-  "preferences": {},
-  "decision_log": [],
+  "preferences": {
+    "testing.browser": {
+      "value": "puppeteer",
+      "confirmed": true,
+      "description": "Browser end-to-end testing tool — Puppeteer (headless Chrome)",
+      "install_command": "npm install --save-dev puppeteer",
+      "note": "After each frontend feature is implemented, install and use Puppeteer for browser testing by default"
+    }
+  },
+  "decision_log": [
+    {
+      "timestamp": "2026-03-27T00:00:00Z",
+      "decision_key": "testing.browser",
+      "value": "puppeteer",
+      "context": "global testing tool declaration",
+      "source": "user_explicit"
+    }
+  ],
   "last_evolved": null,
-  "last_updated": "2026-03-25T00:00:00Z"
+  "last_updated": "2026-03-27T00:00:00Z"
 }
